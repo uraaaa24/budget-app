@@ -1,20 +1,15 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { fetchExpenses } from '@/features/dashboard/api';
-import type { Expense } from '@/features/dashboard/types';
+import { expenseQueryKeys } from '@/features/dashboard/query-keys';
 
 export function useExpenseQuery() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [queryError, setQueryError] = useState<string | null>(null);
+  const { data, isError } = useQuery({
+    queryKey: expenseQueryKeys.list(),
+    queryFn: fetchExpenses,
+  });
 
-  const loadExpenses = useCallback(async () => {
-    try {
-      const items = await fetchExpenses();
-      setExpenses(items);
-      setQueryError(null);
-    } catch {
-      setQueryError('Failed to load expenses. Is backend running on port 3001?');
-    }
-  }, []);
+  const expenses = useMemo(() => data ?? [], [data]);
 
   const totalAmount = useMemo(
     () => expenses.reduce((total, item) => total + item.amount, 0),
@@ -24,7 +19,6 @@ export function useExpenseQuery() {
   return {
     expenses,
     totalAmount,
-    queryError,
-    loadExpenses,
+    queryError: isError ? 'Failed to load expenses. Is backend running on port 3001?' : null,
   };
 }

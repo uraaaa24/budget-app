@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { ExpenseForm } from '@/features/dashboard/expense-form';
@@ -7,14 +6,8 @@ import { useCreateExpense } from '@/features/dashboard/use-create-expense';
 import { useExpenseQuery } from '@/features/dashboard/use-expense-query';
 
 export function DashboardScreen() {
-  const { expenses, totalAmount, queryError, loadExpenses } = useExpenseQuery();
-  const { isSubmitting, mutationError, submitExpense } = useCreateExpense({
-    onSuccess: loadExpenses,
-  });
-
-  useEffect(() => {
-    loadExpenses();
-  }, [loadExpenses]);
+  const { expenses, totalAmount, queryError } = useExpenseQuery();
+  const { isSubmitting, mutationError, submitExpense } = useCreateExpense();
 
   const error = mutationError ?? queryError;
 

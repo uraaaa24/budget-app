@@ -1,35 +1,32 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createExpense } from '@/features/dashboard/api';
+import { expenseQueryKeys } from '@/features/dashboard/query-keys';
 import type { CreateExpenseInput } from '@/features/dashboard/types';
 
-type UseCreateExpenseParams = {
-  onSuccess?: () => Promise<void> | void;
-};
-
-export function useCreateExpense({ onSuccess }: UseCreateExpenseParams = {}) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [mutationError, setMutationError] = useState<string | null>(null);
+export function useCreateExpense() {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: createExpense,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: expenseQueryKeys.list() });
+    },
+  });
 
   const submitExpense = useCallback(
     async (input: CreateExpenseInput) => {
-      setMutationError(null);
-      setIsSubmitting(true);
       try {
-        await createExpense(input);
-        await onSuccess?.();
+        await mutation.mutateAsync(input);
       } catch {
-        setMutationError('Failed to create expense.');
         throw new Error('submit failed');
-      } finally {
-        setIsSubmitting(false);
       }
     },
-    [onSuccess],
+    [mutation],
   );
 
   return {
-    isSubmitting,
-    mutationError,
+    isSubmitting: mutation.isPending,
+    mutationError: mutation.isError ? 'Failed to create expense.' : null,
     submitExpense,
   };
 }
