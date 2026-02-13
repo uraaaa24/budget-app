@@ -2,6 +2,42 @@
 
 This Turborepo starter is maintained by the Turborepo core team.
 
+## Commit Convention
+
+This repository enforces commit message naming through a local `commit-msg` hook.
+
+### One-time setup
+
+```sh
+pnpm run setup:git-hooks
+```
+
+### Format
+
+```txt
+<type>(optional-scope): <subject>
+```
+
+Examples:
+
+- `feat(mobile): add transaction summary card`
+- `fix(backend): handle missing budget id`
+- `chore: update workspace scripts`
+
+Allowed `type` values:
+
+- `feat`
+- `fix`
+- `docs`
+- `style`
+- `refactor`
+- `perf`
+- `test`
+- `build`
+- `ci`
+- `chore`
+- `revert`
+
 ## Using this example
 
 Run the following command:
