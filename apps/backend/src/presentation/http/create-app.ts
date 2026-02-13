@@ -12,8 +12,11 @@ export const createApp = () => {
   const app = new Hono();
   app.use("*", cors());
 
+  // Health Check
   const healthRepository = new SystemHealthRepository();
   const getHealthUseCase = new GetHealthUseCase(healthRepository);
+
+  // Expense Management
   const expenseRepository = new InMemoryExpenseRepository();
   const createExpenseUseCase = new CreateExpenseUseCase(expenseRepository);
   const listExpensesUseCase = new ListExpensesUseCase(expenseRepository);
