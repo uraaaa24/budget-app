@@ -1,4 +1,4 @@
-import type { CreateExpenseInput, Expense } from '@/features/dashboard/types';
+import type { CreateExpenseInput, Expense } from '@/features/dashboard/model/types';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 

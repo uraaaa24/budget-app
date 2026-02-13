@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import type { Expense } from '@/features/dashboard/types';
+import type { Expense } from '@/features/dashboard/model/types';
 
 type ExpenseListProps = {
   expenses: Expense[];

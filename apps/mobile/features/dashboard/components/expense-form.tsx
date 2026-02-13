@@ -1,6 +1,6 @@
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
-import type { CreateExpenseInput, ExpenseFormValues } from '@/features/dashboard/types';
+import type { CreateExpenseInput, ExpenseFormValues } from '@/features/dashboard/model/types';
 
 type ExpenseFormProps = {
   isSubmitting: boolean;

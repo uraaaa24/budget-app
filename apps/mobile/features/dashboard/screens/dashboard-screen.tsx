@@ -1,9 +1,9 @@
 import { ScrollView, Text, View } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
-import { ExpenseForm } from '@/features/dashboard/expense-form';
-import { ExpenseList } from '@/features/dashboard/expense-list';
-import { useCreateExpense } from '@/features/dashboard/use-create-expense';
-import { useExpenseQuery } from '@/features/dashboard/use-expense-query';
+import { ExpenseForm } from '@/features/dashboard/components/expense-form';
+import { ExpenseList } from '@/features/dashboard/components/expense-list';
+import { useCreateExpense } from '@/features/dashboard/hooks/use-create-expense';
+import { useExpenseQuery } from '@/features/dashboard/hooks/use-expense-query';
 
 export function DashboardScreen() {
   const { expenses, totalAmount, queryError } = useExpenseQuery();

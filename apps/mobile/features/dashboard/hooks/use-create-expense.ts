@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createExpense } from '@/features/dashboard/api';
-import { expenseQueryKeys } from '@/features/dashboard/query-keys';
-import type { CreateExpenseInput } from '@/features/dashboard/types';
+import { expenseQueryKeys } from '@/features/dashboard/model/query-keys';
+import type { CreateExpenseInput } from '@/features/dashboard/model/types';
+import { createExpense } from '@/features/dashboard/services/api';
 
 export function useCreateExpense() {
   const queryClient = useQueryClient();

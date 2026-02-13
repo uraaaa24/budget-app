@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchExpenses } from '@/features/dashboard/api';
-import { expenseQueryKeys } from '@/features/dashboard/query-keys';
+import { expenseQueryKeys } from '@/features/dashboard/model/query-keys';
+import { fetchExpenses } from '@/features/dashboard/services/api';
 
 export function useExpenseQuery() {
   const { data, isError } = useQuery({

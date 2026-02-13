@@ -1,1 +1,1 @@
-export { DashboardScreen } from './screen';
+export { DashboardScreen } from './screens/dashboard-screen';
