@@ -25,20 +25,17 @@ export const useCreateTransaction = () => {
     },
   })
 
-  const submitTransaction = useCallback(
-    async (input: CreateTransactionInput) => {
-      try {
-        await mutation.mutateAsync(input)
-      } catch {
-        throw new Error("submit failed")
-      }
-    },
-    [mutation],
-  )
+  const submitTransaction = useCallback(async (input: CreateTransactionInput) => {
+    await mutation.mutateAsync(input)
+  }, [mutation])
 
   return {
     isSubmitting: mutation.isPending,
-    mutationError: mutation.isError ? "Failed to create transaction." : null,
+    mutationError: mutation.isError
+      ? mutation.error instanceof Error
+        ? mutation.error.message
+        : "Failed to create transaction."
+      : null,
     submitTransaction,
   }
 }

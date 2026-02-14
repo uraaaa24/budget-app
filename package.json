@@ -10,11 +10,13 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "setup:git-hooks": "git config core.hooksPath .githooks",
-    "db:start": "pnpm supabase start",
-    "db:stop": "pnpm supabase stop",
+    "db:start": "colima start && pnpm supabase start -x storage-api,logflare,vector,realtime,studio,postgres-meta",
+    "db:start:full": "colima start && pnpm supabase start",
+    "db:stop": "pnpm supabase stop || true; colima stop || true",
     "db:status": "pnpm supabase status",
     "db:reset": "pnpm supabase db reset",
     "db:push": "pnpm supabase db push",
+    "db:push:local": "pnpm supabase db push --local",
     "db:migration:new": "pnpm supabase migration new"
   },
   "dependencies": {

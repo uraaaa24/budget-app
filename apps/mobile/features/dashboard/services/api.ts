@@ -13,7 +13,12 @@ export const fetchTransactions = async (token: AuthToken) => {
   })
 
   if (!response.ok) {
-    throw new Error('Failed to load transactions')
+    const detail = await response.text().catch(() => '')
+    throw new Error(
+      detail
+        ? `Failed to load transactions: ${response.status} ${detail}`
+        : `Failed to load transactions: ${response.status}`,
+    )
   }
 
   const data = (await response.json()) as { items: Transaction[] }
@@ -34,7 +39,12 @@ export const createTransaction = async (
   })
 
   if (!response.ok) {
-    throw new Error('Failed to create transaction')
+    const detail = await response.text().catch(() => '')
+    throw new Error(
+      detail
+        ? `Failed to create transaction: ${response.status} ${detail}`
+        : `Failed to create transaction: ${response.status}`,
+    )
   }
 
   return (await response.json()) as Transaction

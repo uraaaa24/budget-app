@@ -9,4 +9,5 @@ export type Transaction = {
   memo?: string
   spentAt: string
   createdAt: string
+  updatedAt: string
 }

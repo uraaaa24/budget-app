@@ -1,4 +1,5 @@
 import { CreateTransactionUseCase } from "@/application/create-transaction-use-case"
+import { logger } from "@/core/logger"
 import { ListTransactionsUseCase } from "@/application/list-transactions-use-case"
 import { createTransactionRepository } from "@/infrastructure/create-transaction-repository"
 import { registerSystemRoutes } from "@/presentation/http/register-system-routes"
@@ -9,6 +10,17 @@ import { cors } from "hono/cors"
 export const createApp = () => {
   const app = new Hono()
   app.use("*", cors())
+  app.onError((error, c) => {
+    logger.error("unhandled_http_error", {
+      method: c.req.method,
+      path: c.req.path,
+      requestId: c.req.header("x-request-id") ?? null,
+      errorName: error.name,
+      errorMessage: error.message,
+    })
+
+    return c.json({ error: "Internal Server Error" }, 500)
+  })
 
   const transactionRepository = createTransactionRepository()
   const createTransactionUseCase = new CreateTransactionUseCase(

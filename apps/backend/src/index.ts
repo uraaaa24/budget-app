@@ -1,13 +1,14 @@
-import { serve } from "@hono/node-server";
-import { env } from "@/core/env";
-import { createApp } from "@/presentation/http/create-app";
+import { env } from "@/core/env"
+import { logger } from "@/core/logger"
+import { createApp } from "@/presentation/http/create-app"
+import { serve } from "@hono/node-server"
 
-const apiUrl = new URL(env.API_URL);
-const port = Number(apiUrl.port || "3001");
+const apiUrl = new URL(env.API_URL)
+const port = Number(apiUrl.port || "3001")
 
 serve({
   fetch: createApp().fetch,
   port,
-});
+})
 
-console.log(`backend listening on ${env.API_URL}`);
+logger.info("backend_started", { apiUrl: env.API_URL, port })

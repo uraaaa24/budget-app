@@ -4,8 +4,7 @@
   "globalEnv": [
     "API_URL",
     "CLERK_SECRET_KEY",
-    "SUPABASE_URL",
-    "SUPABASE_SERVICE_ROLE_KEY"
+    "DATABASE_URL"
   ],
   "tasks": {
     "build": {
