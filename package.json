@@ -9,13 +9,20 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "setup:git-hooks": "git config core.hooksPath .githooks"
+    "setup:git-hooks": "git config core.hooksPath .githooks",
+    "db:start": "pnpm supabase start",
+    "db:stop": "pnpm supabase stop",
+    "db:status": "pnpm supabase status",
+    "db:reset": "pnpm supabase db reset",
+    "db:push": "pnpm supabase db push",
+    "db:migration:new": "pnpm supabase migration new"
   },
   "dependencies": {
     "react-native-css-interop": "^0.2.1"
   },
   "devDependencies": {
     "prettier": "^3.7.4",
+    "supabase": "^2.76.8",
     "turbo": "^2.8.7",
     "typescript": "5.9.2"
   },

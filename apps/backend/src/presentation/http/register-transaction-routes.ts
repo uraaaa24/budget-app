@@ -1,13 +1,14 @@
-import type { Hono } from "hono";
-import { API_PATHS } from "@repo/validation/api-paths";
+import type { Hono } from "hono"
+import { API_PATHS } from "@repo/validation/api-paths"
 import {
   createTransactionBodySchema,
   transactionListResponseSchema,
   transactionSchema,
-} from "@repo/validation/transaction";
-import { describeRoute, resolver, validator } from "hono-openapi";
-import type { CreateTransactionUseCase } from "@/application/create-transaction-use-case";
-import type { ListTransactionsUseCase } from "@/application/list-transactions-use-case";
+} from "@repo/validation/transaction"
+import { describeRoute, resolver, validator } from "hono-openapi"
+import type { CreateTransactionUseCase } from "@/application/create-transaction-use-case"
+import type { ListTransactionsUseCase } from "@/application/list-transactions-use-case"
+import { requireUserId } from "@/presentation/http/auth/require-user-id"
 
 export const registerTransactionRoutes = (
   app: Hono,
@@ -32,11 +33,16 @@ export const registerTransactionRoutes = (
     }),
     validator("json", createTransactionBodySchema),
     async (c) => {
-      const payload = c.req.valid("json");
-      const transaction = await createTransactionUseCase.execute(payload);
-      return c.json(transaction, 201);
+      const userId = await requireUserId(c)
+      if (userId instanceof Response) {
+        return userId
+      }
+
+      const payload = c.req.valid("json")
+      const transaction = await createTransactionUseCase.execute(userId, payload)
+      return c.json(transaction, 201)
     },
-  );
+  )
 
   app.get(
     API_PATHS.transactions,
@@ -55,8 +61,13 @@ export const registerTransactionRoutes = (
       },
     }),
     async (c) => {
-      const transactions = await listTransactionsUseCase.execute();
-      return c.json({ items: transactions });
+      const userId = await requireUserId(c)
+      if (userId instanceof Response) {
+        return userId
+      }
+
+      const transactions = await listTransactionsUseCase.execute(userId)
+      return c.json({ items: transactions })
     },
-  );
-};
+  )
+}

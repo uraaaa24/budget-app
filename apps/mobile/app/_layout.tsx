@@ -1,14 +1,21 @@
-import { QueryClientProvider } from '@tanstack/react-query';
-import { Stack } from 'expo-router';
-import '../global.css';
-import { queryClient } from '@/lib/query-client';
+import { ClerkProvider } from '@clerk/clerk-expo'
+import { tokenCache } from '@clerk/clerk-expo/token-cache'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { Stack } from 'expo-router'
+import '../global.css'
+import { env } from '@/lib/env'
+import { queryClient } from '@/lib/query-client'
 
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-      </Stack>
-    </QueryClientProvider>
-  );
+    <ClerkProvider
+      publishableKey={env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      tokenCache={tokenCache}>
+      <QueryClientProvider client={queryClient}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+      </QueryClientProvider>
+    </ClerkProvider>
+  )
 }
