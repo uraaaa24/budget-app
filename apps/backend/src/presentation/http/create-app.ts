@@ -1,22 +1,29 @@
-import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { CreateExpenseUseCase } from "@/application/create-expense-use-case";
-import { ListExpensesUseCase } from "@/application/list-expenses-use-case";
-import { InMemoryExpenseRepository } from "@/infrastructure/in-memory-expense-repository";
-import { registerExpenseRoutes } from "@/presentation/http/register-expense-routes";
-import { registerSystemRoutes } from "@/presentation/http/register-system-routes";
+import { CreateTransactionUseCase } from "@/application/create-transaction-use-case"
+import { ListTransactionsUseCase } from "@/application/list-transactions-use-case"
+import { createTransactionRepository } from "@/infrastructure/create-transaction-repository"
+import { registerSystemRoutes } from "@/presentation/http/register-system-routes"
+import { registerTransactionRoutes } from "@/presentation/http/register-transaction-routes"
+import { Hono } from "hono"
+import { cors } from "hono/cors"
 
 export const createApp = () => {
-  const app = new Hono();
-  app.use("*", cors());
+  const app = new Hono()
+  app.use("*", cors())
 
-  // Expense Management
-  const expenseRepository = new InMemoryExpenseRepository();
-  const createExpenseUseCase = new CreateExpenseUseCase(expenseRepository);
-  const listExpensesUseCase = new ListExpensesUseCase(expenseRepository);
+  const transactionRepository = createTransactionRepository()
+  const createTransactionUseCase = new CreateTransactionUseCase(
+    transactionRepository,
+  )
+  const listTransactionsUseCase = new ListTransactionsUseCase(
+    transactionRepository,
+  )
 
-  registerSystemRoutes(app);
-  registerExpenseRoutes(app, createExpenseUseCase, listExpensesUseCase);
+  registerSystemRoutes(app)
+  registerTransactionRoutes(
+    app,
+    createTransactionUseCase,
+    listTransactionsUseCase,
+  )
 
-  return app;
-};
+  return app
+}

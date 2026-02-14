@@ -1,13 +1,13 @@
 import { ScrollView, Text, View } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
-import { ExpenseForm } from '@/features/dashboard/components/expense-form';
-import { ExpenseList } from '@/features/dashboard/components/expense-list';
-import { useCreateExpense } from '@/features/dashboard/hooks/use-create-expense';
-import { useExpenseQuery } from '@/features/dashboard/hooks/use-expense-query';
+import { TransactionForm } from '@/features/dashboard/components/transaction-form';
+import { TransactionList } from '@/features/dashboard/components/transaction-list';
+import { useCreateTransaction } from '@/features/dashboard/hooks/use-create-transaction';
+import { useTransactionQuery } from '@/features/dashboard/hooks/use-transaction-query';
 
 export function DashboardScreen() {
-  const { expenses, totalAmount, queryError } = useExpenseQuery();
-  const { isSubmitting, mutationError, submitExpense } = useCreateExpense();
+  const { transactions, summary, queryError } = useTransactionQuery();
+  const { isSubmitting, mutationError, submitTransaction } = useCreateTransaction();
 
   const error = mutationError ?? queryError;
 
@@ -15,11 +15,13 @@ export function DashboardScreen() {
     <ScreenContainer>
       <View className="mb-6">
         <Text className="text-3xl font-bold text-slate-900">Budget App</Text>
-        <Text className="mt-2 text-slate-600">Sample: create an expense from this form.</Text>
+        <Text className="mt-2 text-slate-600">
+          Record both expenses and incomes from this form.
+        </Text>
       </View>
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 32, gap: 16 }}>
-        <ExpenseForm isSubmitting={isSubmitting} onSubmit={submitExpense} />
+        <TransactionForm isSubmitting={isSubmitting} onSubmit={submitTransaction} />
 
         {error ? (
           <View className="rounded-xl border border-rose-200 bg-rose-50 p-3">
@@ -27,7 +29,12 @@ export function DashboardScreen() {
           </View>
         ) : null}
 
-        <ExpenseList expenses={expenses} totalAmount={totalAmount} />
+        <TransactionList
+          transactions={transactions}
+          income={summary.income}
+          expense={summary.expense}
+          balance={summary.balance}
+        />
       </ScrollView>
     </ScreenContainer>
   );

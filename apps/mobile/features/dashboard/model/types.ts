@@ -1,5 +1,8 @@
-export type Expense = {
+export type TransactionType = 'expense' | 'income';
+
+export type Transaction = {
   id: string;
+  type: TransactionType;
   amount: number;
   category: string;
   memo?: string;
@@ -7,13 +10,15 @@ export type Expense = {
   createdAt: string;
 };
 
-export type ExpenseFormValues = {
+export type TransactionFormValues = {
+  type: TransactionType;
   amount: string;
   category: string;
   memo: string;
 };
 
-export type CreateExpenseInput = {
+export type CreateTransactionInput = {
+  type: TransactionType;
   amount: number;
   category: string;
   memo?: string;

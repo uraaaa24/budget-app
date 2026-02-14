@@ -1,20 +1,20 @@
-import type { CreateExpenseInput, Expense } from '@/features/dashboard/model/types';
+import type { CreateTransactionInput, Transaction } from '@/features/dashboard/model/types';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
-export async function fetchExpenses() {
-  const response = await fetch(`${API_BASE_URL}/expenses`);
+export async function fetchTransactions() {
+  const response = await fetch(`${API_BASE_URL}/transactions`);
 
   if (!response.ok) {
-    throw new Error('Failed to load expenses');
+    throw new Error('Failed to load transactions');
   }
 
-  const data = (await response.json()) as { items: Expense[] };
+  const data = (await response.json()) as { items: Transaction[] };
   return data.items;
 }
 
-export async function createExpense(input: CreateExpenseInput) {
-  const response = await fetch(`${API_BASE_URL}/expenses`, {
+export async function createTransaction(input: CreateTransactionInput) {
+  const response = await fetch(`${API_BASE_URL}/transactions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -23,8 +23,8 @@ export async function createExpense(input: CreateExpenseInput) {
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create expense');
+    throw new Error('Failed to create transaction');
   }
 
-  return (await response.json()) as Expense;
+  return (await response.json()) as Transaction;
 }

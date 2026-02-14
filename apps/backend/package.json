@@ -17,6 +17,7 @@
     "@repo/validation": "workspace:*",
     "@standard-community/standard-json": "^0.3.5",
     "@standard-community/standard-openapi": "^0.2.9",
+    "@supabase/supabase-js": "^2.93.1",
     "@types/json-schema": "^7.0.15",
     "@valibot/to-json-schema": "^1.5.0",
     "hono": "^4.9.8",

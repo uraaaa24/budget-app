@@ -1,27 +1,40 @@
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
-import type { CreateExpenseInput, ExpenseFormValues } from '@/features/dashboard/model/types';
+import type {
+  CreateTransactionInput,
+  TransactionFormValues,
+  TransactionType,
+} from '@/features/dashboard/model/types';
 
-type ExpenseFormProps = {
+type TransactionFormProps = {
   isSubmitting: boolean;
-  onSubmit: (input: CreateExpenseInput) => Promise<void>;
+  onSubmit: (input: CreateTransactionInput) => Promise<void>;
 };
 
-export function ExpenseForm({ isSubmitting, onSubmit }: ExpenseFormProps) {
+const typeOptions: Array<{ value: TransactionType; label: string }> = [
+  { value: 'expense', label: 'Expense' },
+  { value: 'income', label: 'Income' },
+];
+
+export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps) {
   const {
     control,
     handleSubmit,
+    watch,
     formState: { errors },
     reset,
-  } = useForm<ExpenseFormValues>({
+  } = useForm<TransactionFormValues>({
     defaultValues: {
+      type: 'expense',
       amount: '',
       category: '',
       memo: '',
     },
   });
 
-  const submit = async (values: ExpenseFormValues) => {
+  const selectedType = watch('type');
+
+  const submit = async (values: TransactionFormValues) => {
     const parsedAmount = Number(values.amount);
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
       return;
@@ -29,12 +42,18 @@ export function ExpenseForm({ isSubmitting, onSubmit }: ExpenseFormProps) {
 
     try {
       await onSubmit({
+        type: values.type,
         amount: parsedAmount,
         category: values.category.trim(),
         memo: values.memo.trim() || undefined,
         spentAt: new Date().toISOString(),
       });
-      reset();
+      reset({
+        type: values.type,
+        amount: '',
+        category: '',
+        memo: '',
+      });
     } catch {
       // parent hook owns error state
     }
@@ -42,7 +61,31 @@ export function ExpenseForm({ isSubmitting, onSubmit }: ExpenseFormProps) {
 
   return (
     <View className="rounded-2xl border border-slate-200 bg-white p-4">
-      <Text className="mb-4 text-lg font-semibold text-slate-900">Record Expense</Text>
+      <Text className="mb-4 text-lg font-semibold text-slate-900">Record Transaction</Text>
+
+      <Text className="mb-1 text-slate-700">Type</Text>
+      <Controller
+        control={control}
+        name="type"
+        rules={{ required: 'Type is required.' }}
+        render={({ field: { onChange } }) => (
+          <View className="mb-3 flex-row gap-2">
+            {typeOptions.map((option) => {
+              const isSelected = selectedType === option.value;
+              return (
+                <Pressable
+                  key={option.value}
+                  onPress={() => onChange(option.value)}
+                  className={`rounded-xl px-3 py-2 ${isSelected ? 'bg-slate-900' : 'bg-slate-100'}`}>
+                  <Text className={isSelected ? 'font-semibold text-white' : 'text-slate-700'}>
+                    {option.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
+      />
 
       <Text className="mb-1 text-slate-700">Amount</Text>
       <Controller
@@ -118,7 +161,7 @@ export function ExpenseForm({ isSubmitting, onSubmit }: ExpenseFormProps) {
         disabled={isSubmitting}
         className="rounded-xl bg-slate-900 px-4 py-3">
         <Text className="text-center font-semibold text-white">
-          {isSubmitting ? 'Saving...' : 'Save Expense'}
+          {isSubmitting ? 'Saving...' : 'Save Transaction'}
         </Text>
       </Pressable>
     </View>
