@@ -1,7 +1,7 @@
 import type { Hono } from "hono";
 import { createExpenseBodySchema } from "@repo/validation/expense";
-import type { CreateExpenseUseCase } from "@/application/create-expense-use-case.js";
-import type { ListExpensesUseCase } from "@/application/list-expenses-use-case.js";
+import type { CreateExpenseUseCase } from "@/application/create-expense-use-case";
+import type { ListExpensesUseCase } from "@/application/list-expenses-use-case";
 
 export const registerExpenseRoutes = (
   app: Hono,

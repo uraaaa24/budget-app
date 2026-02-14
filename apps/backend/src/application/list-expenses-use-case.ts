@@ -1,4 +1,4 @@
-import type { ExpenseRepository } from "@/domain/expense-repository.js";
+import type { ExpenseRepository } from "@/domain/expense-repository";
 
 export class ListExpensesUseCase {
   constructor(private readonly repository: ExpenseRepository) {}

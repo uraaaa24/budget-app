@@ -1,9 +1,9 @@
 import { randomUUID } from "node:crypto";
-import type { Expense } from "@/domain/expense.js";
+import type { Expense } from "@/domain/expense";
 import type {
   CreateExpenseInput,
   ExpenseRepository,
-} from "@/domain/expense-repository.js";
+} from "@/domain/expense-repository";
 
 export class InMemoryExpenseRepository implements ExpenseRepository {
   private readonly expenses: Expense[] = [];

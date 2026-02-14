@@ -1,4 +1,4 @@
-import type { Expense } from "@/domain/expense.js";
+import type { Expense } from "@/domain/expense";
 
 export type CreateExpenseInput = Omit<Expense, "id" | "createdAt">;
 
