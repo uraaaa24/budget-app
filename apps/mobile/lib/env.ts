@@ -7,7 +7,7 @@ const createEnv = (): AppEnv => {
 
   if (!publishableKey) {
     throw new Error(
-      'Invalid mobile env provided. EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY is required.',
+      "Invalid mobile env provided. EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY is required.",
     )
   }
 

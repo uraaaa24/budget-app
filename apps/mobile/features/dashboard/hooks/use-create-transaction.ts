@@ -1,9 +1,9 @@
-import { useCallback } from 'react'
-import { useAuth } from '@clerk/clerk-expo'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { transactionQueryKeys } from '@/features/dashboard/model/query-keys'
-import type { CreateTransactionInput } from '@/features/dashboard/model/types'
-import { createTransaction } from '@/features/dashboard/services/api'
+import { transactionQueryKeys } from "@/features/dashboard/model/query-keys"
+import type { CreateTransactionInput } from "@/features/dashboard/model/types"
+import { createTransaction } from "@/features/dashboard/services/api"
+import { useAuth } from "@clerk/clerk-expo"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useCallback } from "react"
 
 export function useCreateTransaction() {
   const queryClient = useQueryClient()
@@ -13,7 +13,7 @@ export function useCreateTransaction() {
     mutationFn: async (input: CreateTransactionInput) => {
       const token = await getToken()
       if (!token) {
-        throw new Error('No auth token')
+        throw new Error("No auth token")
       }
 
       return createTransaction(input, token)
@@ -30,7 +30,7 @@ export function useCreateTransaction() {
       try {
         await mutation.mutateAsync(input)
       } catch {
-        throw new Error('submit failed')
+        throw new Error("submit failed")
       }
     },
     [mutation],
@@ -38,7 +38,7 @@ export function useCreateTransaction() {
 
   return {
     isSubmitting: mutation.isPending,
-    mutationError: mutation.isError ? 'Failed to create transaction.' : null,
+    mutationError: mutation.isError ? "Failed to create transaction." : null,
     submitTransaction,
   }
 }

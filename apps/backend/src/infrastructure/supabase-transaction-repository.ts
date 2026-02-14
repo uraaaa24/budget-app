@@ -1,9 +1,9 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 import type { Transaction } from "@/domain/transaction"
 import type {
   CreateTransactionInput,
   TransactionRepository,
 } from "@/domain/transaction-repository"
+import { createClient, type SupabaseClient } from "@supabase/supabase-js"
 
 type TransactionRow = {
   id: string
@@ -35,7 +35,10 @@ export class SupabaseTransactionRepository implements TransactionRepository {
     })
   }
 
-  async create(userId: string, input: CreateTransactionInput): Promise<Transaction> {
+  async create(
+    userId: string,
+    input: CreateTransactionInput,
+  ): Promise<Transaction> {
     const { data, error } = await this.client
       .from(this.tableName)
       .insert({

@@ -4,8 +4,8 @@ import * as v from "valibot"
 const EnvSchema = v.object({
   API_URL: v.pipe(v.string(), v.url()),
   CLERK_SECRET_KEY: v.pipe(v.string(), v.minLength(1)),
-  SUPABASE_URL: v.optional(v.pipe(v.string(), v.url())),
-  SUPABASE_SERVICE_ROLE_KEY: v.optional(v.string()),
+  SUPABASE_URL: v.pipe(v.string(), v.url()),
+  SUPABASE_SERVICE_ROLE_KEY: v.pipe(v.string(), v.minLength(1)),
 })
 type AppEnv = v.InferOutput<typeof EnvSchema>
 
@@ -30,14 +30,6 @@ const createEnv = (): AppEnv => {
 
     throw new Error(
       `Invalid env provided. The following variables are missing or invalid:\n${lines.join("\n")}`,
-    )
-  }
-
-  const hasSupabaseUrl = Boolean(parsedEnv.output.SUPABASE_URL)
-  const hasSupabaseServiceRole = Boolean(parsedEnv.output.SUPABASE_SERVICE_ROLE_KEY)
-  if (hasSupabaseUrl !== hasSupabaseServiceRole) {
-    throw new Error(
-      "Invalid env provided. SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set together.",
     )
   }
 

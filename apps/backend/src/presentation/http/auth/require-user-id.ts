@@ -1,6 +1,6 @@
-import type { Context } from "hono"
-import { verifyToken } from "@clerk/backend"
 import { env } from "@/core/env"
+import { verifyToken } from "@clerk/backend"
+import type { Context } from "hono"
 
 export const requireUserId = async (c: Context): Promise<string | Response> => {
   const authHeader = c.req.header("authorization")

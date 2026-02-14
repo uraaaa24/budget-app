@@ -1,22 +1,25 @@
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { Controller, useForm } from 'react-hook-form';
 import type {
   CreateTransactionInput,
   TransactionFormValues,
   TransactionType,
-} from '@/features/dashboard/model/types';
+} from "@/features/dashboard/model/types"
+import { Controller, useForm } from "react-hook-form"
+import { Pressable, Text, TextInput, View } from "react-native"
 
 type TransactionFormProps = {
-  isSubmitting: boolean;
-  onSubmit: (input: CreateTransactionInput) => Promise<void>;
-};
+  isSubmitting: boolean
+  onSubmit: (input: CreateTransactionInput) => Promise<void>
+}
 
-const typeOptions: Array<{ value: TransactionType; label: string }> = [
-  { value: 'expense', label: 'Expense' },
-  { value: 'income', label: 'Income' },
-];
+const typeOptions: { value: TransactionType; label: string }[] = [
+  { value: "expense", label: "Expense" },
+  { value: "income", label: "Income" },
+]
 
-export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps) {
+export function TransactionForm({
+  isSubmitting,
+  onSubmit,
+}: TransactionFormProps) {
   const {
     control,
     handleSubmit,
@@ -25,19 +28,19 @@ export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps
     reset,
   } = useForm<TransactionFormValues>({
     defaultValues: {
-      type: 'expense',
-      amount: '',
-      category: '',
-      memo: '',
+      type: "expense",
+      amount: "",
+      category: "",
+      memo: "",
     },
-  });
+  })
 
-  const selectedType = watch('type');
+  const selectedType = watch("type")
 
   const submit = async (values: TransactionFormValues) => {
-    const parsedAmount = Number(values.amount);
+    const parsedAmount = Number(values.amount)
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
-      return;
+      return
     }
 
     try {
@@ -47,41 +50,48 @@ export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps
         category: values.category.trim(),
         memo: values.memo.trim() || undefined,
         spentAt: new Date().toISOString(),
-      });
+      })
       reset({
         type: values.type,
-        amount: '',
-        category: '',
-        memo: '',
-      });
+        amount: "",
+        category: "",
+        memo: "",
+      })
     } catch {
       // parent hook owns error state
     }
-  };
+  }
 
   return (
     <View className="rounded-2xl border border-slate-200 bg-white p-4">
-      <Text className="mb-4 text-lg font-semibold text-slate-900">Record Transaction</Text>
+      <Text className="mb-4 text-lg font-semibold text-slate-900">
+        Record Transaction
+      </Text>
 
       <Text className="mb-1 text-slate-700">Type</Text>
       <Controller
         control={control}
         name="type"
-        rules={{ required: 'Type is required.' }}
+        rules={{ required: "Type is required." }}
         render={({ field: { onChange } }) => (
           <View className="mb-3 flex-row gap-2">
             {typeOptions.map((option) => {
-              const isSelected = selectedType === option.value;
+              const isSelected = selectedType === option.value
               return (
                 <Pressable
                   key={option.value}
                   onPress={() => onChange(option.value)}
-                  className={`rounded-xl px-3 py-2 ${isSelected ? 'bg-slate-900' : 'bg-slate-100'}`}>
-                  <Text className={isSelected ? 'font-semibold text-white' : 'text-slate-700'}>
+                  className={`rounded-xl px-3 py-2 ${isSelected ? "bg-slate-900" : "bg-slate-100"}`}
+                >
+                  <Text
+                    className={
+                      isSelected ? "font-semibold text-white" : "text-slate-700"
+                    }
+                  >
                     {option.label}
                   </Text>
                 </Pressable>
-              );
+              )
             })}
           </View>
         )}
@@ -92,11 +102,11 @@ export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps
         control={control}
         name="amount"
         rules={{
-          required: 'Amount is required.',
+          required: "Amount is required.",
           validate: (value: string) =>
             Number.isFinite(Number(value)) && Number(value) > 0
               ? true
-              : 'Amount must be a positive number.',
+              : "Amount must be a positive number.",
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
@@ -109,17 +119,19 @@ export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps
           />
         )}
       />
-      {errors.amount ? <Text className="mb-3 text-rose-600">{errors.amount.message}</Text> : null}
+      {errors.amount ? (
+        <Text className="mb-3 text-rose-600">{errors.amount.message}</Text>
+      ) : null}
 
       <Text className="mb-1 text-slate-700">Category</Text>
       <Controller
         control={control}
         name="category"
         rules={{
-          required: 'Category is required.',
+          required: "Category is required.",
           maxLength: {
             value: 50,
-            message: 'Category must be 50 characters or less.',
+            message: "Category must be 50 characters or less.",
           },
         }}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -132,7 +144,9 @@ export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps
           />
         )}
       />
-      {errors.category ? <Text className="mb-3 text-rose-600">{errors.category.message}</Text> : null}
+      {errors.category ? (
+        <Text className="mb-3 text-rose-600">{errors.category.message}</Text>
+      ) : null}
 
       <Text className="mb-1 text-slate-700">Memo (optional)</Text>
       <Controller
@@ -141,7 +155,7 @@ export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps
         rules={{
           maxLength: {
             value: 200,
-            message: 'Memo must be 200 characters or less.',
+            message: "Memo must be 200 characters or less.",
           },
         }}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -154,16 +168,19 @@ export function TransactionForm({ isSubmitting, onSubmit }: TransactionFormProps
           />
         )}
       />
-      {errors.memo ? <Text className="mb-3 text-rose-600">{errors.memo.message}</Text> : null}
+      {errors.memo ? (
+        <Text className="mb-3 text-rose-600">{errors.memo.message}</Text>
+      ) : null}
 
       <Pressable
         onPress={handleSubmit(submit)}
         disabled={isSubmitting}
-        className="rounded-xl bg-slate-900 px-4 py-3">
+        className="rounded-xl bg-slate-900 px-4 py-3"
+      >
         <Text className="text-center font-semibold text-white">
-          {isSubmitting ? 'Saving...' : 'Save Transaction'}
+          {isSubmitting ? "Saving..." : "Save Transaction"}
         </Text>
       </Pressable>
     </View>
-  );
+  )
 }

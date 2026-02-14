@@ -4,11 +4,8 @@
 
 - `API_URL` (required)
 - `CLERK_SECRET_KEY` (required)
-- `SUPABASE_URL` (optional)
-- `SUPABASE_SERVICE_ROLE_KEY` (optional)
-
-If both Supabase variables are set, backend uses Supabase.
-If either is missing, it falls back to the in-memory repository.
+- `SUPABASE_URL` (required)
+- `SUPABASE_SERVICE_ROLE_KEY` (required)
 
 ## Auth
 
