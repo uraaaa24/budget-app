@@ -1,10 +1,11 @@
 import type { Hono } from "hono";
+import { API_PATHS } from "@repo/validation/api-paths";
 import { swaggerUI } from "@hono/swagger-ui";
 import { describeRoute, openAPIRouteHandler } from "hono-openapi";
 
 export const registerSystemRoutes = (app: Hono) => {
   app.get(
-    "/health",
+    API_PATHS.health,
     describeRoute({
       summary: "Health check",
       tags: ["system"],
@@ -26,7 +27,7 @@ export const registerSystemRoutes = (app: Hono) => {
   );
 
   app.get(
-    "/doc",
+    API_PATHS.doc,
     openAPIRouteHandler(app, {
       documentation: {
         openapi: "3.0.0",
@@ -36,9 +37,9 @@ export const registerSystemRoutes = (app: Hono) => {
           description: "Budget app backend API documentation",
         },
       },
-      exclude: ["/doc", "/ui"],
+      exclude: [API_PATHS.doc, API_PATHS.ui],
     }),
   );
 
-  app.get("/ui", swaggerUI({ url: "/doc" }));
+  app.get(API_PATHS.ui, swaggerUI({ url: API_PATHS.doc }));
 };

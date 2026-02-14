@@ -1,9 +1,10 @@
+import { API_PATHS } from '@repo/validation/api-paths';
 import type { CreateTransactionInput, Transaction } from '@/features/dashboard/model/types';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 
 export async function fetchTransactions() {
-  const response = await fetch(`${API_BASE_URL}/transactions`);
+  const response = await fetch(`${API_BASE_URL}${API_PATHS.transactions}`);
 
   if (!response.ok) {
     throw new Error('Failed to load transactions');
@@ -14,7 +15,7 @@ export async function fetchTransactions() {
 }
 
 export async function createTransaction(input: CreateTransactionInput) {
-  const response = await fetch(`${API_BASE_URL}/transactions`, {
+  const response = await fetch(`${API_BASE_URL}${API_PATHS.transactions}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

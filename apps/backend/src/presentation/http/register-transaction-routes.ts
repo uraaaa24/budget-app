@@ -1,4 +1,5 @@
 import type { Hono } from "hono";
+import { API_PATHS } from "@repo/validation/api-paths";
 import {
   createTransactionBodySchema,
   transactionListResponseSchema,
@@ -14,7 +15,7 @@ export const registerTransactionRoutes = (
   listTransactionsUseCase: ListTransactionsUseCase,
 ) => {
   app.post(
-    "/transactions",
+    API_PATHS.transactions,
     describeRoute({
       summary: "Create transaction",
       tags: ["transactions"],
@@ -38,7 +39,7 @@ export const registerTransactionRoutes = (
   );
 
   app.get(
-    "/transactions",
+    API_PATHS.transactions,
     describeRoute({
       summary: "List transactions",
       tags: ["transactions"],
