@@ -6,7 +6,7 @@ import { useTransactionQuery } from "@/features/dashboard/hooks/use-transaction-
 import { useAuth, useClerk } from "@clerk/clerk-expo"
 import { Pressable, ScrollView, Text, View } from "react-native"
 
-export function DashboardScreen() {
+export const DashboardScreen = () => {
   const { userId } = useAuth()
   const { signOut } = useClerk()
 

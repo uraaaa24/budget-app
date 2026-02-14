@@ -32,14 +32,14 @@ const sizeStyles: Record<ButtonSize, CSSProperties> = {
   lg: { height: 48, padding: "0 20px", fontSize: 16 },
 };
 
-export function Button({
+export const Button = ({
   children,
   className,
   variant = "primary",
   size = "md",
   type = "button",
   ...rest
-}: ButtonProps) {
+}: ButtonProps) => {
   const style = {
     ...baseStyle,
     ...variantStyles[variant],
@@ -52,4 +52,4 @@ export function Button({
       {children}
     </button>
   );
-}
+};

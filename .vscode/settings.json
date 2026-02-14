@@ -7,7 +7,7 @@
     "source.fixAll.eslint": true,
     "source.organizeImports": true
   },
-  "eslint.run": "onSave",
+  "eslint.run": "onType",
   "eslint.validate": [
     "javascript",
     "javascriptreact",

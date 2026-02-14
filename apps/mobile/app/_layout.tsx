@@ -9,7 +9,7 @@ import "../global.css"
 
 WebBrowser.maybeCompleteAuthSession()
 
-export default function RootLayout() {
+const RootLayout = () => {
   return (
     <ClerkProvider
       publishableKey={env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
@@ -28,3 +28,5 @@ export default function RootLayout() {
     </ClerkProvider>
   )
 }
+
+export default RootLayout

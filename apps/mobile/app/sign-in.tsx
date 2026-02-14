@@ -4,7 +4,7 @@ import { useAuth } from "@clerk/clerk-expo"
 import { Redirect } from "expo-router"
 import { Text, View } from "react-native"
 
-export default function SignInScreen() {
+const SignInScreen = () => {
   const { isLoaded, isSignedIn } = useAuth()
 
   if (!isLoaded) {
@@ -28,3 +28,5 @@ export default function SignInScreen() {
     </ScreenContainer>
   )
 }
+
+export default SignInScreen

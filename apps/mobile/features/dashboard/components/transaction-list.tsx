@@ -8,12 +8,12 @@ type TransactionListProps = {
   balance: number
 }
 
-export function TransactionList({
+export const TransactionList = ({
   transactions,
   income,
   expense,
   balance,
-}: TransactionListProps) {
+}: TransactionListProps) => {
   return (
     <View className="rounded-2xl border border-slate-200 bg-white p-4">
       <Text className="text-lg font-semibold text-slate-900">

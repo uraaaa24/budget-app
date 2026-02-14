@@ -5,7 +5,7 @@ import { useAuth } from "@clerk/clerk-expo"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
 
-export function useCreateTransaction() {
+export const useCreateTransaction = () => {
   const queryClient = useQueryClient()
   const { getToken, userId } = useAuth()
 

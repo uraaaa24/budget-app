@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 
-export default function TabTwoScreen() {
+const TabTwoScreen = () => {
   return (
     <ScreenContainer>
       <Text className="mb-2 text-3xl font-bold text-slate-900">Settings</Text>
@@ -15,4 +15,6 @@ export default function TabTwoScreen() {
       </View>
     </ScreenContainer>
   );
-}
+};
+
+export default TabTwoScreen;

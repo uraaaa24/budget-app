@@ -4,7 +4,7 @@ import * as WebBrowser from "expo-web-browser"
 import { useState } from "react"
 import { Pressable, Text, View } from "react-native"
 
-export function SignInForm() {
+export const SignInForm = () => {
   const { startSSOFlow } = useSSO()
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)

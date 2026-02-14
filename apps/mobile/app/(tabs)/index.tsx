@@ -1,5 +1,7 @@
 import { DashboardScreen } from '@/features/dashboard';
 
-export default function HomeScreen() {
+const HomeScreen = () => {
   return <DashboardScreen />;
-}
+};
+
+export default HomeScreen;

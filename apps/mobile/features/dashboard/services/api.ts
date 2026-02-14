@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3
 
 type AuthToken = string
 
-export async function fetchTransactions(token: AuthToken) {
+export const fetchTransactions = async (token: AuthToken) => {
   const response = await fetch(`${API_BASE_URL}${API_PATHS.transactions}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -20,7 +20,10 @@ export async function fetchTransactions(token: AuthToken) {
   return data.items
 }
 
-export async function createTransaction(input: CreateTransactionInput, token: AuthToken) {
+export const createTransaction = async (
+  input: CreateTransactionInput,
+  token: AuthToken,
+) => {
   const response = await fetch(`${API_BASE_URL}${API_PATHS.transactions}`, {
     method: 'POST',
     headers: {

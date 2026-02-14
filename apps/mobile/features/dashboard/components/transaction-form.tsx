@@ -16,10 +16,10 @@ const typeOptions: { value: TransactionType; label: string }[] = [
   { value: "income", label: "Income" },
 ]
 
-export function TransactionForm({
+export const TransactionForm = ({
   isSubmitting,
   onSubmit,
-}: TransactionFormProps) {
+}: TransactionFormProps) => {
   const {
     control,
     handleSubmit,

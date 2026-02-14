@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons"
 import { Redirect, Tabs } from "expo-router"
 import React from "react"
 
-export default function TabLayout() {
+const TabLayout = () => {
   const { isLoaded, isSignedIn } = useAuth()
 
   if (!isLoaded) {
@@ -47,3 +47,5 @@ export default function TabLayout() {
     </Tabs>
   )
 }
+
+export default TabLayout

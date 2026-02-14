@@ -4,7 +4,7 @@ import { useAuth } from "@clerk/clerk-expo"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 
-export function useTransactionQuery() {
+export const useTransactionQuery = () => {
   const { isSignedIn, userId, getToken } = useAuth()
 
   const { data, isError } = useQuery({
