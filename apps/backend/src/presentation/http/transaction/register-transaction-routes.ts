@@ -8,12 +8,13 @@ import {
 import { describeRoute, resolver, validator } from "hono-openapi"
 import type { CreateTransactionUseCase } from "@/application/transaction/create-transaction-use-case"
 import type { ListTransactionsUseCase } from "@/application/transaction/list-transactions-use-case"
-import { requireUserId } from "@/presentation/http/auth/require-user-id"
+import type { GetUserId } from "@/presentation/http/auth/get-user-id"
 
 export const registerTransactionRoutes = (
   app: Hono,
   createTransactionUseCase: CreateTransactionUseCase,
   listTransactionsUseCase: ListTransactionsUseCase,
+  getUserId: GetUserId,
 ) => {
   app.post(
     API_PATHS.transactions,
@@ -33,7 +34,7 @@ export const registerTransactionRoutes = (
     }),
     validator("json", createTransactionBodySchema),
     async (c) => {
-      const userId = await requireUserId(c)
+      const userId = await getUserId(c)
       if (userId instanceof Response) {
         return userId
       }
@@ -61,7 +62,7 @@ export const registerTransactionRoutes = (
       },
     }),
     async (c) => {
-      const userId = await requireUserId(c)
+      const userId = await getUserId(c)
       if (userId instanceof Response) {
         return userId
       }

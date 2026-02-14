@@ -1,5 +1,6 @@
 import { env } from "@/core/env"
 import { logger } from "@/core/logger"
+import type { GetUserId } from "@/presentation/http/auth/get-user-id"
 import { verifyToken } from "@clerk/backend"
 import type { Context } from "hono"
 
@@ -21,7 +22,9 @@ const logUnauthorized = (
   })
 }
 
-export const requireUserId = async (c: Context): Promise<string | Response> => {
+export const requireUserId: GetUserId = async (
+  c: Context,
+): Promise<string | Response> => {
   const authHeader = c.req.header("authorization")
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     logUnauthorized(c, "missing_or_invalid_authorization_header", {

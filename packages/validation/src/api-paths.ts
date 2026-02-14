@@ -3,4 +3,5 @@ export const API_PATHS = {
   doc: "/doc",
   ui: "/ui",
   transactions: "/transactions",
-} as const;
+  categories: "/categories",
+} as const
