@@ -1,8 +1,8 @@
-import type { Transaction } from "@/domain/transaction"
+import type { Transaction } from "@/domain/transaction/transaction"
 import type {
   CreateTransactionInput,
   TransactionRepository,
-} from "@/domain/transaction-repository"
+} from "@/domain/transaction/transaction-repository"
 import type { DbClient } from "@/infrastructure/database/client"
 import {
   transactions,

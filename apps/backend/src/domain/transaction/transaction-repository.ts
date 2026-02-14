@@ -1,4 +1,4 @@
-import type { Transaction } from "@/domain/transaction"
+import type { Transaction } from "@/domain/transaction/transaction"
 
 export type CreateTransactionInput = Omit<
   Transaction,

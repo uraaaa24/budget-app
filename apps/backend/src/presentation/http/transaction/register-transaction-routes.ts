@@ -6,8 +6,8 @@ import {
   transactionSchema,
 } from "@repo/validation/transaction"
 import { describeRoute, resolver, validator } from "hono-openapi"
-import type { CreateTransactionUseCase } from "@/application/create-transaction-use-case"
-import type { ListTransactionsUseCase } from "@/application/list-transactions-use-case"
+import type { CreateTransactionUseCase } from "@/application/transaction/create-transaction-use-case"
+import type { ListTransactionsUseCase } from "@/application/transaction/list-transactions-use-case"
 import { requireUserId } from "@/presentation/http/auth/require-user-id"
 
 export const registerTransactionRoutes = (
