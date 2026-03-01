@@ -4,8 +4,8 @@
   "prettier.requireConfig": true,
   "prettier.semi": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.organizeImports": true
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
   },
   "eslint.run": "onType",
   "eslint.validate": [

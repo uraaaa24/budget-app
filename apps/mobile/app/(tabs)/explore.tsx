@@ -1,5 +1,5 @@
-import { Text, View } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
+import { Text, View } from 'react-native';
 
 const TabTwoScreen = () => {
   return (

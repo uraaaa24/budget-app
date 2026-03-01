@@ -1,30 +1,33 @@
-import { env } from "@/lib/env"
 import { queryClient } from "@/lib/query-client"
-import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-expo"
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo"
 import { tokenCache } from "@clerk/clerk-expo/token-cache"
 import { QueryClientProvider } from "@tanstack/react-query"
-import { Stack } from "expo-router"
+import { Redirect, Stack } from "expo-router"
 import * as WebBrowser from "expo-web-browser"
 import "../global.css"
 
 WebBrowser.maybeCompleteAuthSession()
 
+const RootNavigator = () => {
+  const { isLoaded, isSignedIn } = useAuth()
+
+  if (!isLoaded) return null
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="sign-in" />
+        <Stack.Screen name="(tabs)" />
+      </Stack>
+      {isSignedIn && <Redirect href="/(tabs)" />}
+    </QueryClientProvider>
+  )
+}
+
 const RootLayout = () => {
   return (
-    <ClerkProvider
-      publishableKey={env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      tokenCache={tokenCache}
-    >
-      <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <SignedIn>
-            <Stack.Screen name="(tabs)" />
-          </SignedIn>
-          <SignedOut>
-            <Stack.Screen name="sign-in" />
-          </SignedOut>
-        </Stack>
-      </QueryClientProvider>
+    <ClerkProvider tokenCache={tokenCache}>
+      <RootNavigator />
     </ClerkProvider>
   )
 }

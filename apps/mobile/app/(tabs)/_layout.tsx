@@ -4,11 +4,7 @@ import { Redirect, Tabs } from "expo-router"
 import React from "react"
 
 const TabLayout = () => {
-  const { isLoaded, isSignedIn } = useAuth()
-
-  if (!isLoaded) {
-    return null
-  }
+  const { isSignedIn } = useAuth()
 
   if (!isSignedIn) {
     return <Redirect href="/sign-in" />
