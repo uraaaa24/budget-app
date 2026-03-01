@@ -14,6 +14,7 @@ export const categories = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     userId: text("user_id"),
     name: text("name").notNull(),
+    emoji: text("emoji").notNull(),
     type: text("type", { enum: ["expense", "income"] }).notNull(),
     isDefault: boolean("is_default").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true })

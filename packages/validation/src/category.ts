@@ -11,6 +11,7 @@ const isoDateTimeStringSchema = v.pipe(
 
 export const createCategoryBodySchema = v.object({
   name: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(50)),
+  emoji: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(8)),
   type: transactionTypeSchema,
 })
 export type CreateCategoryBody = v.InferOutput<typeof createCategoryBodySchema>
@@ -19,6 +20,7 @@ export const categorySchema = v.object({
   id: v.pipe(v.string(), v.minLength(1)),
   userId: v.optional(v.pipe(v.string(), v.minLength(1))),
   name: v.pipe(v.string(), v.minLength(1)),
+  emoji: v.pipe(v.string(), v.minLength(1), v.maxLength(8)),
   type: transactionTypeSchema,
   isDefault: v.boolean(),
   createdAt: isoDateTimeStringSchema,

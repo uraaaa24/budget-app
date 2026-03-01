@@ -19,6 +19,7 @@ export class DrizzleCategoryRepository implements CategoryRepository {
       .values({
         userId,
         name: input.name,
+        emoji: input.emoji,
         type: input.type,
         isDefault: false,
         updatedAt: new Date(),
@@ -64,6 +65,7 @@ const toDomainCategory = (row: CategoryRow): Category => ({
   id: row.id,
   userId: row.userId ?? undefined,
   name: row.name,
+  emoji: row.emoji,
   type: row.type,
   isDefault: row.isDefault,
   createdAt: row.createdAt.toISOString(),

@@ -8,6 +8,15 @@ create table if not exists public.categories (
   updated_at timestamptz not null default now()
 );
 
+alter table public.categories
+  add column if not exists is_default boolean not null default false;
+
+alter table public.categories
+  add column if not exists created_at timestamptz not null default now();
+
+alter table public.categories
+  add column if not exists updated_at timestamptz not null default now();
+
 create index if not exists categories_user_id_idx
   on public.categories (user_id);
 

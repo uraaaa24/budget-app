@@ -1,6 +1,7 @@
 import { ScreenContainer } from "@/components/screen-container"
 import { TransactionForm } from "@/features/dashboard/components/transaction-form"
 import { TransactionList } from "@/features/dashboard/components/transaction-list"
+import { useCategoryQuery } from "@/features/dashboard/hooks/use-category-query"
 import { useCreateTransaction } from "@/features/dashboard/hooks/use-create-transaction"
 import { useTransactionQuery } from "@/features/dashboard/hooks/use-transaction-query"
 import { useAuth, useClerk } from "@clerk/clerk-expo"
@@ -10,11 +11,12 @@ export const DashboardScreen = () => {
   const { userId } = useAuth()
   const { signOut } = useClerk()
 
+  const { categories, queryError: categoryQueryError } = useCategoryQuery()
   const { transactions, summary, queryError } = useTransactionQuery()
   const { isSubmitting, mutationError, submitTransaction } =
     useCreateTransaction()
 
-  const error = mutationError ?? queryError
+  const error = mutationError ?? queryError ?? categoryQueryError
 
   return (
     <ScreenContainer>
@@ -36,6 +38,7 @@ export const DashboardScreen = () => {
         contentContainerStyle={{ paddingBottom: 32, gap: 16 }}
       >
         <TransactionForm
+          categories={categories}
           isSubmitting={isSubmitting}
           onSubmit={submitTransaction}
         />
@@ -47,6 +50,7 @@ export const DashboardScreen = () => {
         ) : null}
 
         <TransactionList
+          categories={categories}
           transactions={transactions}
           income={summary.income}
           expense={summary.expense}

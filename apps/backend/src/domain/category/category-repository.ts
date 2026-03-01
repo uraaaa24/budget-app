@@ -3,6 +3,7 @@ import type { TransactionType } from "@/domain/transaction/transaction"
 
 export type CreateCategoryInput = {
   name: string
+  emoji: string
   type: TransactionType
 }
 

@@ -1,12 +1,15 @@
 import type {
+  Category,
   CreateTransactionInput,
   TransactionFormValues,
   TransactionType,
 } from "@/features/dashboard/model/types"
+import { useEffect, useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { Pressable, Text, TextInput, View } from "react-native"
 
 type TransactionFormProps = {
+  categories: Category[]
   isSubmitting: boolean
   onSubmit: (input: CreateTransactionInput) => Promise<void>
 }
@@ -17,6 +20,7 @@ const typeOptions: { value: TransactionType; label: string }[] = [
 ]
 
 export const TransactionForm = ({
+  categories,
   isSubmitting,
   onSubmit,
 }: TransactionFormProps) => {
@@ -26,6 +30,7 @@ export const TransactionForm = ({
     watch,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<TransactionFormValues>({
     defaultValues: {
       type: "expense",
@@ -36,6 +41,26 @@ export const TransactionForm = ({
   })
 
   const selectedType = watch("type")
+  const selectedCategory = watch("category")
+  const availableCategories = useMemo(
+    () => categories.filter((item) => item.type === selectedType),
+    [categories, selectedType],
+  )
+
+  useEffect(() => {
+    const isSelectedAvailable = availableCategories.some(
+      (item) => item.name === selectedCategory,
+    )
+    if (isSelectedAvailable) {
+      return
+    }
+
+    const nextCategory = availableCategories[0]?.name ?? ""
+    if (nextCategory === selectedCategory) {
+      return
+    }
+    setValue("category", nextCategory, { shouldValidate: true })
+  }, [availableCategories, selectedCategory, setValue])
 
   const submit = async (values: TransactionFormValues) => {
     const parsedAmount = Number(values.amount)
@@ -47,7 +72,7 @@ export const TransactionForm = ({
       await onSubmit({
         type: values.type,
         amount: parsedAmount,
-        category: values.category.trim(),
+        category: values.category,
         memo: values.memo.trim() || undefined,
         spentAt: new Date().toISOString(),
       })
@@ -129,21 +154,40 @@ export const TransactionForm = ({
         name="category"
         rules={{
           required: "Category is required.",
-          maxLength: {
-            value: 50,
-            message: "Category must be 50 characters or less.",
-          },
         }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            value={value}
-            onChangeText={onChange}
-            onBlur={onBlur}
-            placeholder="Food"
-            className="mb-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900"
-          />
+        render={({ field: { onChange } }) => (
+          <View className="mb-1 flex-row flex-wrap gap-2">
+            {availableCategories.map((category) => {
+              const isSelected = selectedCategory === category.name
+              return (
+                <Pressable
+                  key={category.id}
+                  onPress={() => onChange(category.name)}
+                  className={`flex-row items-center rounded-xl border px-3 py-2 ${isSelected ? "border-slate-900 bg-slate-900" : "border-slate-200 bg-slate-100"}`}
+                >
+                  <Text
+                    className={`mr-1 ${isSelected ? "text-white" : "text-slate-900"}`}
+                  >
+                    {category.emoji}
+                  </Text>
+                  <Text
+                    className={
+                      isSelected ? "font-semibold text-white" : "text-slate-700"
+                    }
+                  >
+                    {category.name}
+                  </Text>
+                </Pressable>
+              )
+            })}
+          </View>
         )}
       />
+      {availableCategories.length === 0 ? (
+        <Text className="mb-3 text-rose-600">
+          No categories available for this type.
+        </Text>
+      ) : null}
       {errors.category ? (
         <Text className="mb-3 text-rose-600">{errors.category.message}</Text>
       ) : null}
