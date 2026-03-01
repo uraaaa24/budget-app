@@ -2,22 +2,19 @@ import type {
   Category,
   CreateTransactionInput,
   TransactionFormValues,
-  TransactionType,
 } from "@/features/dashboard/model/types"
+import { CategoryPicker } from "@/features/dashboard/components/transaction-form/category-picker"
+import { TextInputField } from "@/features/dashboard/components/transaction-form/text-input-field"
+import { TypeSelector } from "@/features/dashboard/components/transaction-form/type-selector"
 import { useEffect, useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
-import { Pressable, Text, TextInput, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 
 type TransactionFormProps = {
   categories: Category[]
   isSubmitting: boolean
   onSubmit: (input: CreateTransactionInput) => Promise<void>
 }
-
-const typeOptions: { value: TransactionType; label: string }[] = [
-  { value: "expense", label: "Expense" },
-  { value: "income", label: "Income" },
-]
 
 export const TransactionForm = ({
   categories,
@@ -59,6 +56,7 @@ export const TransactionForm = ({
     if (nextCategory === selectedCategory) {
       return
     }
+
     setValue("category", nextCategory, { shouldValidate: true })
   }, [availableCategories, selectedCategory, setValue])
 
@@ -88,41 +86,26 @@ export const TransactionForm = ({
   }
 
   return (
-    <View className="rounded-2xl border border-slate-200 bg-white p-4">
-      <Text className="mb-4 text-lg font-semibold text-slate-900">
+    <View className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <Text className="text-lg font-semibold text-slate-900">
         Record Transaction
       </Text>
+      <Text className="mb-4 mt-1 text-xs text-slate-500">
+        Quick add with category emoji
+      </Text>
 
-      <Text className="mb-1 text-slate-700">Type</Text>
       <Controller
         control={control}
         name="type"
         rules={{ required: "Type is required." }}
         render={({ field: { onChange } }) => (
-          <View className="mb-3 flex-row gap-2">
-            {typeOptions.map((option) => {
-              const isSelected = selectedType === option.value
-              return (
-                <Pressable
-                  key={option.value}
-                  onPress={() => onChange(option.value)}
-                  className={`rounded-xl px-3 py-2 ${isSelected ? "bg-slate-900" : "bg-slate-100"}`}
-                >
-                  <Text
-                    className={
-                      isSelected ? "font-semibold text-white" : "text-slate-700"
-                    }
-                  >
-                    {option.label}
-                  </Text>
-                </Pressable>
-              )
-            })}
-          </View>
+          <TypeSelector selectedType={selectedType} onSelect={onChange} />
         )}
       />
+      {errors.type?.message ? (
+        <Text className="mb-3 text-rose-600">{errors.type.message}</Text>
+      ) : null}
 
-      <Text className="mb-1 text-slate-700">Amount</Text>
       <Controller
         control={control}
         name="amount"
@@ -134,21 +117,18 @@ export const TransactionForm = ({
               : "Amount must be a positive number.",
         }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <TextInputField
+            label="Amount"
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
             keyboardType="decimal-pad"
             placeholder="1200"
-            className="mb-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900"
+            errorMessage={errors.amount?.message}
           />
         )}
       />
-      {errors.amount ? (
-        <Text className="mb-3 text-rose-600">{errors.amount.message}</Text>
-      ) : null}
 
-      <Text className="mb-1 text-slate-700">Category</Text>
       <Controller
         control={control}
         name="category"
@@ -156,43 +136,15 @@ export const TransactionForm = ({
           required: "Category is required.",
         }}
         render={({ field: { onChange } }) => (
-          <View className="mb-1 flex-row flex-wrap gap-2">
-            {availableCategories.map((category) => {
-              const isSelected = selectedCategory === category.name
-              return (
-                <Pressable
-                  key={category.id}
-                  onPress={() => onChange(category.name)}
-                  className={`flex-row items-center rounded-xl border px-3 py-2 ${isSelected ? "border-slate-900 bg-slate-900" : "border-slate-200 bg-slate-100"}`}
-                >
-                  <Text
-                    className={`mr-1 ${isSelected ? "text-white" : "text-slate-900"}`}
-                  >
-                    {category.emoji}
-                  </Text>
-                  <Text
-                    className={
-                      isSelected ? "font-semibold text-white" : "text-slate-700"
-                    }
-                  >
-                    {category.name}
-                  </Text>
-                </Pressable>
-              )
-            })}
-          </View>
+          <CategoryPicker
+            selectedCategory={selectedCategory}
+            availableCategories={availableCategories}
+            onChange={onChange}
+            errorMessage={errors.category?.message}
+          />
         )}
       />
-      {availableCategories.length === 0 ? (
-        <Text className="mb-3 text-rose-600">
-          No categories available for this type.
-        </Text>
-      ) : null}
-      {errors.category ? (
-        <Text className="mb-3 text-rose-600">{errors.category.message}</Text>
-      ) : null}
 
-      <Text className="mb-1 text-slate-700">Memo (optional)</Text>
       <Controller
         control={control}
         name="memo"
@@ -203,23 +155,21 @@ export const TransactionForm = ({
           },
         }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
+          <TextInputField
+            label="Memo (optional)"
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
             placeholder="Lunch with team"
-            className="mb-1 rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-900"
+            errorMessage={errors.memo?.message}
           />
         )}
       />
-      {errors.memo ? (
-        <Text className="mb-3 text-rose-600">{errors.memo.message}</Text>
-      ) : null}
 
       <Pressable
         onPress={handleSubmit(submit)}
         disabled={isSubmitting}
-        className="rounded-xl bg-slate-900 px-4 py-3"
+        className="h-12 items-center justify-center rounded-xl bg-slate-900 px-4"
       >
         <Text className="text-center font-semibold text-white">
           {isSubmitting ? "Saving..." : "Save Transaction"}

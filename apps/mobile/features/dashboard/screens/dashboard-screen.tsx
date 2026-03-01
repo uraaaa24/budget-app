@@ -1,22 +1,20 @@
 import { ScreenContainer } from "@/components/screen-container"
-import { TransactionForm } from "@/features/dashboard/components/transaction-form"
 import { TransactionList } from "@/features/dashboard/components/transaction-list"
 import { useCategoryQuery } from "@/features/dashboard/hooks/use-category-query"
-import { useCreateTransaction } from "@/features/dashboard/hooks/use-create-transaction"
 import { useTransactionQuery } from "@/features/dashboard/hooks/use-transaction-query"
 import { useAuth, useClerk } from "@clerk/clerk-expo"
+import { useRouter } from "expo-router"
 import { Pressable, ScrollView, Text, View } from "react-native"
 
 export const DashboardScreen = () => {
   const { userId } = useAuth()
   const { signOut } = useClerk()
+  const router = useRouter()
 
   const { categories, queryError: categoryQueryError } = useCategoryQuery()
   const { transactions, summary, queryError } = useTransactionQuery()
-  const { isSubmitting, mutationError, submitTransaction } =
-    useCreateTransaction()
 
-  const error = mutationError ?? queryError ?? categoryQueryError
+  const error = queryError ?? categoryQueryError
 
   return (
     <ScreenContainer>
@@ -35,14 +33,8 @@ export const DashboardScreen = () => {
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingBottom: 32, gap: 16 }}
+        contentContainerStyle={{ paddingBottom: 112, gap: 16 }}
       >
-        <TransactionForm
-          categories={categories}
-          isSubmitting={isSubmitting}
-          onSubmit={submitTransaction}
-        />
-
         {error ? (
           <View className="rounded-xl border border-rose-200 bg-rose-50 p-3">
             <Text className="text-rose-700">{error}</Text>
@@ -57,6 +49,13 @@ export const DashboardScreen = () => {
           balance={summary.balance}
         />
       </ScrollView>
+
+      <Pressable
+        onPress={() => router.push("/transaction-modal")}
+        className="absolute bottom-8 right-6 h-14 w-14 items-center justify-center rounded-full border border-slate-800 bg-slate-900 shadow-2xl"
+      >
+        <Text className="text-2xl font-semibold text-white">+</Text>
+      </Pressable>
     </ScreenContainer>
   )
 }
