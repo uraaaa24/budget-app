@@ -18,7 +18,7 @@ export const DashboardScreen = () => {
 
   return (
     <ScreenContainer>
-      <View className="mb-6">
+      {/* <View className="mb-6">
         <Text className="text-3xl font-bold text-slate-900">Budget App</Text>
         <Text className="mt-2 text-slate-600">
           Record both expenses and incomes from this form.
@@ -29,7 +29,7 @@ export const DashboardScreen = () => {
         <Pressable className="mt-3 self-start" onPress={() => signOut()}>
           <Text className="font-medium text-slate-700">Sign out</Text>
         </Pressable>
-      </View>
+      </View> */}
 
       <ScrollView
         className="flex-1"
@@ -52,7 +52,7 @@ export const DashboardScreen = () => {
 
       <Pressable
         onPress={() => router.push("/transaction-modal")}
-        className="absolute bottom-8 right-6 h-14 w-14 items-center justify-center rounded-full border border-slate-800 bg-slate-900 shadow-2xl"
+        className="absolute bottom-8 right-6 h-14 w-14 items-center justify-center rounded-full border border-slate-800 bg-slate-900"
       >
         <Text className="text-2xl font-semibold text-white">+</Text>
       </Pressable>
