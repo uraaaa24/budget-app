@@ -32,3 +32,17 @@ export type Transaction = v.InferOutput<typeof transactionSchema>
 export const transactionListResponseSchema = v.object({
   items: v.array(transactionSchema),
 })
+
+export const updateTransactionBodySchema = v.object({
+  type: transactionTypeSchema,
+  amount: v.pipe(v.number(), v.check((input) => input > 0)),
+  category: v.pipe(v.string(), v.trim(), v.minLength(1), v.maxLength(50)),
+  memo: v.optional(v.pipe(v.string(), v.trim(), v.maxLength(200))),
+  spentAt: isoDateTimeStringSchema,
+})
+export type UpdateTransactionBody = v.InferOutput<typeof updateTransactionBodySchema>
+
+export const updateTransactionParamsSchema = v.object({
+  id: v.pipe(v.string(), v.minLength(1)),
+})
+export type UpdateTransactionParams = v.InferOutput<typeof updateTransactionParamsSchema>
