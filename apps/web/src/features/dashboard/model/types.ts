@@ -25,6 +25,7 @@ export type Transaction = {
 
 export type TransactionFormValues = {
   type: TransactionType
+  date: string
   amount: string
   category: string
   memo: string

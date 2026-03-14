@@ -1,13 +1,38 @@
+import { CategoryPicker } from "@/features/dashboard/components/transaction-form/category-picker"
+import { TextInputField } from "@/features/dashboard/components/transaction-form/text-input-field"
+import { TypeSelector } from "@/features/dashboard/components/transaction-form/type-selector"
 import type {
   Category,
   CreateTransactionInput,
   TransactionFormValues,
 } from "@/features/dashboard/model/types"
-import { CategoryPicker } from "@/features/dashboard/components/transaction-form/category-picker"
-import { TextInputField } from "@/features/dashboard/components/transaction-form/text-input-field"
-import { TypeSelector } from "@/features/dashboard/components/transaction-form/type-selector"
 import { useEffect, useMemo } from "react"
 import { Controller, useForm } from "react-hook-form"
+
+const formatDateInputValue = (value: Date): string => {
+  const year = value.getFullYear()
+  const month = String(value.getMonth() + 1).padStart(2, "0")
+  const day = String(value.getDate()).padStart(2, "0")
+  return `${year}-${month}-${day}`
+}
+
+const buildSpentAt = (dateValue: string): string => {
+  const now = new Date()
+  const [yearText, monthText, dayText] = dateValue.split("-")
+  const year = Number(yearText)
+  const month = Number(monthText)
+  const day = Number(dayText)
+  const merged = new Date(
+    Number.isFinite(year) ? year : now.getFullYear(),
+    Number.isFinite(month) ? month - 1 : now.getMonth(),
+    Number.isFinite(day) ? day : now.getDate(),
+    now.getHours(),
+    now.getMinutes(),
+    now.getSeconds(),
+    now.getMilliseconds(),
+  )
+  return merged.toISOString()
+}
 
 type TransactionFormProps = {
   categories: Category[]
@@ -32,6 +57,7 @@ export const TransactionForm = ({
   } = useForm<TransactionFormValues>({
     defaultValues: initialValues ?? {
       type: "expense",
+      date: formatDateInputValue(new Date()),
       amount: "",
       category: "",
       memo: "",
@@ -73,10 +99,11 @@ export const TransactionForm = ({
         amount: parsedAmount,
         category: values.category,
         memo: values.memo.trim() || undefined,
-        spentAt: initialValues?.spentAt ?? new Date().toISOString(),
+        spentAt: buildSpentAt(values.date),
       })
       reset({
         type: values.type,
+        date: formatDateInputValue(new Date()),
         amount: "",
         category: "",
         memo: "",
@@ -87,14 +114,7 @@ export const TransactionForm = ({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-900">
-        Record Transaction
-      </h2>
-      <p className="mb-4 mt-1 text-xs text-slate-500">
-        Quick add with category emoji
-      </p>
-
+    <div className="space-y-4">
       <Controller
         control={control}
         name="type"
@@ -106,6 +126,23 @@ export const TransactionForm = ({
       {errors.type?.message && (
         <p className="mb-3 text-rose-600">{errors.type.message}</p>
       )}
+
+      <Controller
+        control={control}
+        name="date"
+        rules={{ required: "Date is required." }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInputField
+            label="Date"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            type="date"
+            placeholder="YYYY-MM-DD"
+            errorMessage={errors.date?.message}
+          />
+        )}
+      />
 
       <Controller
         control={control}
@@ -170,7 +207,7 @@ export const TransactionForm = ({
       <button
         onClick={handleSubmit(submit)}
         disabled={isSubmitting}
-        className="h-12 w-full rounded-xl bg-slate-900 px-4 font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
+        className="h-12 w-full rounded-lg bg-slate-900 px-4 text-sm font-medium text-white transition-opacity hover:opacity-75 disabled:opacity-50"
       >
         {isSubmitting ? "Saving..." : "Save Transaction"}
       </button>

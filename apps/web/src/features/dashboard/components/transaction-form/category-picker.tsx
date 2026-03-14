@@ -24,11 +24,13 @@ export const CategoryPicker = ({
   )
 
   return (
-    <>
-      <label className="mb-1 text-slate-700">Category</label>
-      <div className="relative mb-1">
+    <div>
+      <label className="mb-2 block text-sm font-medium text-slate-700">
+        Category
+      </label>
+      <div className="relative">
         {selectedItem && (
-          <div className="pointer-events-none absolute left-3 top-3 z-10">
+          <div className="pointer-events-none absolute left-3 top-2.5 z-10">
             <TwemojiEmoji emoji={selectedItem.emoji} size={18} />
           </div>
         )}
@@ -36,7 +38,7 @@ export const CategoryPicker = ({
           value={selectedCategory}
           onChange={(e) => onChange(e.target.value)}
           disabled={availableCategories.length === 0}
-          className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="h-11 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition-colors focus:border-slate-900 focus:outline-none"
           style={{ paddingLeft: selectedItem ? "2.5rem" : "0.75rem" }}
         >
           {availableCategories.length === 0 ? (
@@ -52,11 +54,11 @@ export const CategoryPicker = ({
       </div>
 
       {availableCategories.length === 0 && (
-        <p className="mb-3 text-rose-600">
+        <p className="mt-1 text-sm text-rose-600">
           No categories available for this type.
         </p>
       )}
-      {errorMessage && <p className="mb-3 text-rose-600">{errorMessage}</p>}
-    </>
+      {errorMessage && <p className="mt-1 text-sm text-rose-600">{errorMessage}</p>}
+    </div>
   )
 }

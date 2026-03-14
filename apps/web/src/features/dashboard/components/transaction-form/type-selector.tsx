@@ -12,30 +12,26 @@ const typeOptions: { value: TransactionType; label: string }[] = [
 
 export const TypeSelector = ({ selectedType, onSelect }: TypeSelectorProps) => {
   return (
-    <>
-      <label className="mb-1 text-slate-700">Type</label>
-      <div className="mb-3 flex gap-2">
+    <div>
+      <label className="mb-2 block text-sm font-medium text-slate-700">
+        Type
+      </label>
+      <div className="flex gap-2">
         {typeOptions.map((option) => (
           <button
             key={option.value}
             type="button"
             onClick={() => onSelect(option.value)}
-            className={`h-12 flex-1 items-center justify-center rounded-xl px-3 ${
-              selectedType === option.value ? "bg-slate-900" : "bg-slate-100"
+            className={`h-11 flex-1 rounded-lg text-sm font-medium transition-colors ${
+              selectedType === option.value
+                ? "bg-slate-900 text-white"
+                : "border border-slate-200 bg-white text-slate-700 hover:border-slate-900"
             }`}
           >
-            <span
-              className={
-                selectedType === option.value
-                  ? "font-semibold text-white"
-                  : "text-slate-700"
-              }
-            >
-              {option.label}
-            </span>
+            {option.label}
           </button>
         ))}
       </div>
-    </>
+    </div>
   )
 }

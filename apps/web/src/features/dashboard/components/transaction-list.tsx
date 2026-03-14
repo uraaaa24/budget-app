@@ -2,6 +2,7 @@
 
 import { TwemojiEmoji } from "@/components/ui/twemoji-emoji"
 import type { Category, Transaction } from "@/features/dashboard/model/types"
+import { createTransactionDateFormatter } from "@/features/dashboard/utils/transaction-date-formatter"
 import { useMemo } from "react"
 
 type TransactionListProps = {
@@ -15,33 +16,36 @@ export function TransactionList({
   transactions,
   onTransactionPress,
 }: TransactionListProps) {
-  const formatDate = (value: string) =>
-    new Date(value).toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
+  const locale = useMemo(
+    () => Intl.DateTimeFormat().resolvedOptions().locale,
+    [],
+  )
+  const dateFormatter = useMemo(
+    () => createTransactionDateFormatter(locale),
+    [locale],
+  )
+
+  // Group transactions by date
+  const groupedByDate = useMemo(() => {
+    const dateMap = new Map<number, Transaction[]>()
+
+    transactions.forEach((t) => {
+      const dateKey = new Date(t.spentAt)
+      dateKey.setHours(0, 0, 0, 0)
+      const dayTimestamp = dateKey.getTime()
+      const list = dateMap.get(dayTimestamp) ?? []
+      list.push(t)
+      dateMap.set(dayTimestamp, list)
     })
 
-  const groupedTransactions = useMemo(() => {
-    const yearMap = new Map<number, Map<number, Transaction[]>>()
-    for (const item of transactions) {
-      const date = new Date(item.spentAt)
-      const year = date.getFullYear()
-      const month = date.getMonth() + 1
-      const monthMap = yearMap.get(year) ?? new Map<number, Transaction[]>()
-      const list = monthMap.get(month) ?? []
-      list.push(item)
-      monthMap.set(month, list)
-      yearMap.set(year, monthMap)
-    }
-
-    return Array.from(yearMap.entries())
+    return Array.from(dateMap.entries())
       .sort((a, b) => b[0] - a[0])
-      .map(([year, monthMap]) => ({
-        year,
-        months: Array.from(monthMap.entries())
-          .sort((a, b) => b[0] - a[0])
-          .map(([month, items]) => ({ month, items })),
+      .map(([dayTimestamp, items]) => ({
+        dayTimestamp,
+        items: items.sort(
+          (a, b) =>
+            new Date(b.spentAt).getTime() - new Date(a.spentAt).getTime(),
+        ),
       }))
   }, [transactions])
 
@@ -57,61 +61,80 @@ export function TransactionList({
   }, [categories])
 
   return (
-    <div className="space-y-3">
-      {groupedTransactions.map((yearGroup) => (
-        <div key={yearGroup.year}>
-          <h3 className="mb-2 text-sm font-semibold text-slate-900">
-            {yearGroup.year}
-          </h3>
-          {yearGroup.months.map((monthGroup) => (
-            <div key={`${yearGroup.year}-${monthGroup.month}`} className="mb-3">
-              <h4 className="mb-2 text-xs font-medium text-slate-500">
-                {monthGroup.month}月
-              </h4>
-              {monthGroup.items.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => onTransactionPress?.(item)}
-                  className="mb-2 flex w-full items-stretch gap-3 rounded-xl border-b border-slate-200 bg-white p-3 text-left hover:bg-slate-50"
-                >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-slate-100">
-                    <TwemojiEmoji
-                      emoji={
-                        categoryEmojiMap.get(
-                          `${item.type}:${item.category.trim().toLowerCase()}`,
-                        ) ?? "🏷️"
-                      }
-                      size={32}
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col justify-center gap-0.5">
-                    <p className="text-sm text-slate-500">
-                      {formatDate(item.spentAt)}
-                    </p>
-                    <p className="text-sm font-medium text-slate-900">
-                      {item.memo?.trim() || "No memo"}
-                    </p>
-                  </div>
-                  <div className="flex items-center">
-                    <p
-                      className={`text-base font-semibold ${
-                        item.type === "income"
-                          ? "text-emerald-600"
-                          : "text-rose-600"
-                      }`}
+    <div>
+      {groupedByDate.length > 0 ? (
+        <div className="space-y-6">
+          {groupedByDate.map((group) => {
+            const relativeLabel = dateFormatter.formatRelativeDayLabel(
+              group.dayTimestamp,
+            )
+            const absoluteLabel = dateFormatter.formatGroupDate(
+              group.dayTimestamp,
+            )
+
+            return (
+              <div key={group.dayTimestamp}>
+                <div className="mb-3 flex items-center gap-2">
+                  <h3 className="rounded-full px-2.5 py-1 text-base font-semibold tracking-wide text-slate-700">
+                    {relativeLabel ?? absoluteLabel}
+                  </h3>
+                </div>
+                <div className="space-y-0">
+                  {group.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => onTransactionPress?.(item)}
+                      className="w-full border-b border-slate-200 py-2 text-left transition-opacity hover:opacity-75"
                     >
-                      {item.type === "income" ? "+" : "-"}
-                      {item.amount.toFixed(0)}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          ))}
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100">
+                          <TwemojiEmoji
+                            emoji={
+                              categoryEmojiMap.get(
+                                `${item.type}:${item.category.trim().toLowerCase()}`,
+                              ) ?? "🏷️"
+                            }
+                            size={30}
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-slate-900">
+                            {item.memo?.trim() || " "}
+                          </p>
+                          {/* 日付を日付 + 秒までまで表示する */}
+                          <p className="text-xs text-slate-500">
+                            {dateFormatter.formatTransactionDateTime(
+                              item.spentAt,
+                            )}
+                          </p>
+                        </div>
+                        <div className="flex-shrink-0">
+                          <p
+                            className={`text-lg font-bold ${
+                              item.type === "income"
+                                ? "text-emerald-600"
+                                : "text-rose-600"
+                            }`}
+                          >
+                            {item.type === "income" ? "+" : "-"}
+                            {item.amount.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
         </div>
-      ))}
-      {transactions.length === 0 && (
-        <p className="text-slate-500">No transactions yet.</p>
+      ) : (
+        <div className="py-12 text-center">
+          <p className="text-slate-500">No transactions this month.</p>
+          <p className="mt-2 text-sm text-slate-400">
+            Click "Add Transaction" to get started.
+          </p>
+        </div>
       )}
     </div>
   )
