@@ -37,3 +37,12 @@ export type CreateTransactionInput = {
   memo?: string
   spentAt: string
 }
+
+export type UpdateTransactionInput = {
+  id: string
+  type: TransactionType
+  amount: number
+  category: string
+  memo?: string
+  spentAt: string
+}

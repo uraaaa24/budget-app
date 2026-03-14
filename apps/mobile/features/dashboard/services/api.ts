@@ -3,6 +3,7 @@ import type {
   Category,
   CreateTransactionInput,
   Transaction,
+  UpdateTransactionInput,
 } from '@/features/dashboard/model/types'
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3001'
@@ -68,6 +69,31 @@ export const createTransaction = async (
       detail
         ? `Failed to create transaction: ${response.status} ${detail}`
         : `Failed to create transaction: ${response.status}`,
+    )
+  }
+
+  return (await response.json()) as Transaction
+}
+
+export const updateTransaction = async (
+  input: UpdateTransactionInput,
+  token: AuthToken,
+) => {
+  const response = await fetch(`${API_BASE_URL}${API_PATHS.transactions}/${input.id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(input),
+  })
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '')
+    throw new Error(
+      detail
+        ? `Failed to update transaction: ${response.status} ${detail}`
+        : `Failed to update transaction: ${response.status}`,
     )
   }
 

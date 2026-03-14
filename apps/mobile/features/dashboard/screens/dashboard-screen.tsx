@@ -2,8 +2,10 @@ import { ScreenContainer } from "@/components/screen-container"
 import { TransactionList } from "@/features/dashboard/components/transaction-list"
 import { useCategoryQuery } from "@/features/dashboard/hooks/use-category-query"
 import { useTransactionQuery } from "@/features/dashboard/hooks/use-transaction-query"
+import type { Transaction } from "@/features/dashboard/model/types"
 import { useAuth, useClerk } from "@clerk/clerk-expo"
 import { useRouter } from "expo-router"
+import { useCallback } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
 
 export const DashboardScreen = () => {
@@ -15,6 +17,23 @@ export const DashboardScreen = () => {
   const { transactions, summary, queryError } = useTransactionQuery()
 
   const error = queryError ?? categoryQueryError
+
+  const handleTransactionPress = useCallback(
+    (transaction: Transaction) => {
+      router.push({
+        pathname: "/transaction-modal",
+        params: {
+          id: transaction.id,
+          type: transaction.type,
+          amount: transaction.amount.toString(),
+          category: transaction.category,
+          memo: transaction.memo ?? "",
+          spentAt: transaction.spentAt,
+        },
+      })
+    },
+    [router],
+  )
 
   return (
     <ScreenContainer>
@@ -47,6 +66,7 @@ export const DashboardScreen = () => {
           income={summary.income}
           expense={summary.expense}
           balance={summary.balance}
+          onTransactionPress={handleTransactionPress}
         />
       </ScrollView>
 

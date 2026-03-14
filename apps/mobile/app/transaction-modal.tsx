@@ -1,8 +1,10 @@
 import { TransactionForm } from "@/features/dashboard/components/transaction-form"
 import { useCategoryQuery } from "@/features/dashboard/hooks/use-category-query"
 import { useCreateTransaction } from "@/features/dashboard/hooks/use-create-transaction"
+import { useUpdateTransaction } from "@/features/dashboard/hooks/use-update-transaction"
+import type { CreateTransactionInput } from "@/features/dashboard/model/types"
 import { useAuth } from "@clerk/clerk-expo"
-import { Redirect, useRouter } from "expo-router"
+import { Redirect, useLocalSearchParams, useRouter } from "expo-router"
 import { useCallback } from "react"
 import {
   KeyboardAvoidingView,
@@ -16,17 +18,45 @@ import {
 const TransactionModalScreen = () => {
   const { isLoaded, isSignedIn } = useAuth()
   const router = useRouter()
+  const params = useLocalSearchParams<{
+    id?: string
+    type?: string
+    amount?: string
+    category?: string
+    memo?: string
+    spentAt?: string
+  }>()
+
+  const isEditMode = Boolean(params.id)
 
   const { categories, queryError: categoryQueryError } = useCategoryQuery()
-  const { isSubmitting, mutationError, submitTransaction } =
-    useCreateTransaction()
+  const {
+    isSubmitting: isCreating,
+    mutationError: createError,
+    submitTransaction: createTransaction,
+  } = useCreateTransaction()
+  const {
+    isSubmitting: isUpdating,
+    mutationError: updateError,
+    submitTransaction: updateTransaction,
+  } = useUpdateTransaction()
+
+  const isSubmitting = isCreating || isUpdating
+  const mutationError = createError || updateError
 
   const submitAndClose = useCallback(
-    async (...args: Parameters<typeof submitTransaction>) => {
-      await submitTransaction(...args)
+    async (input: CreateTransactionInput) => {
+      if (isEditMode && params.id) {
+        await updateTransaction({
+          ...input,
+          id: params.id,
+        })
+      } else {
+        await createTransaction(input)
+      }
       router.back()
     },
-    [router, submitTransaction],
+    [router, isEditMode, params.id, createTransaction, updateTransaction],
   )
 
   if (!isLoaded) return null
@@ -47,7 +77,7 @@ const TransactionModalScreen = () => {
 
         <View className="mb-1 flex-row items-center justify-between">
           <Text className="text-xl font-semibold text-slate-900">
-            Add Transaction
+            {isEditMode ? "Edit Transaction" : "Add Transaction"}
           </Text>
           <Pressable onPress={() => router.back()}>
             <Text className="font-medium text-slate-600">Close</Text>
@@ -77,6 +107,18 @@ const TransactionModalScreen = () => {
             categories={categories}
             isSubmitting={isSubmitting}
             onSubmit={submitAndClose}
+            initialValues={
+              isEditMode && params.id
+                ? {
+                    id: params.id,
+                    type: (params.type as "expense" | "income") ?? "expense",
+                    amount: params.amount ?? "",
+                    category: params.category ?? "",
+                    memo: params.memo ?? "",
+                    spentAt: params.spentAt,
+                  }
+                : undefined
+            }
           />
         </ScrollView>
       </View>

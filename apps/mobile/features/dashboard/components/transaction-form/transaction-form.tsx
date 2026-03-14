@@ -14,12 +14,14 @@ type TransactionFormProps = {
   categories: Category[]
   isSubmitting: boolean
   onSubmit: (input: CreateTransactionInput) => Promise<void>
+  initialValues?: TransactionFormValues & { id?: string; spentAt?: string }
 }
 
 export const TransactionForm = ({
   categories,
   isSubmitting,
   onSubmit,
+  initialValues,
 }: TransactionFormProps) => {
   const {
     control,
@@ -29,7 +31,7 @@ export const TransactionForm = ({
     reset,
     setValue,
   } = useForm<TransactionFormValues>({
-    defaultValues: {
+    defaultValues: initialValues ?? {
       type: "expense",
       amount: "",
       category: "",
@@ -72,7 +74,7 @@ export const TransactionForm = ({
         amount: parsedAmount,
         category: values.category,
         memo: values.memo.trim() || undefined,
-        spentAt: new Date().toISOString(),
+        spentAt: initialValues?.spentAt ?? new Date().toISOString(),
       })
       reset({
         type: values.type,

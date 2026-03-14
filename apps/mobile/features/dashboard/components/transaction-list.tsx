@@ -1,7 +1,7 @@
 import { TwemojiEmoji } from "@/components/ui/twemoji-emoji"
 import type { Category, Transaction } from "@/features/dashboard/model/types"
 import { useMemo } from "react"
-import { Text, View } from "react-native"
+import { Pressable, Text, View } from "react-native"
 
 type TransactionListProps = {
   categories: Category[]
@@ -9,6 +9,7 @@ type TransactionListProps = {
   income: number
   expense: number
   balance: number
+  onTransactionPress?: (transaction: Transaction) => void
 }
 
 export const TransactionList = ({
@@ -17,6 +18,7 @@ export const TransactionList = ({
   income,
   expense,
   balance,
+  onTransactionPress,
 }: TransactionListProps) => {
   const formatDate = (value: string) =>
     new Date(value).toLocaleDateString("ja-JP", {
@@ -83,9 +85,10 @@ export const TransactionList = ({
                 </Text>
 
                 {monthGroup.items.map((item) => (
-                  <View
+                  <Pressable
                     key={item.id}
                     className="mb-2 rounded-xl border-b border-slate-200 p-3"
+                    onPress={() => onTransactionPress?.(item)}
                   >
                     <View className="min-h-10 flex-row items-stretch gap-3">
                       <View className="h-16 w-16 items-center justify-center rounded-lg bg-white">
@@ -128,7 +131,7 @@ export const TransactionList = ({
                         </Text>
                       </View>
                     </View>
-                  </View>
+                  </Pressable>
                 ))}
               </View>
             ))}
