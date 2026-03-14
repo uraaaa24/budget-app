@@ -4,16 +4,20 @@ import {
   createTransactionBodySchema,
   transactionListResponseSchema,
   transactionSchema,
+  updateTransactionBodySchema,
+  updateTransactionParamsSchema,
 } from "@repo/validation/transaction"
 import { describeRoute, resolver, validator } from "hono-openapi"
 import type { CreateTransactionUseCase } from "@/application/transaction/create-transaction-use-case"
 import type { ListTransactionsUseCase } from "@/application/transaction/list-transactions-use-case"
+import type { UpdateTransactionUseCase } from "@/application/transaction/update-transaction-use-case"
 import type { GetUserId } from "@/presentation/http/auth/get-user-id"
 
 export const registerTransactionRoutes = (
   app: Hono,
   createTransactionUseCase: CreateTransactionUseCase,
   listTransactionsUseCase: ListTransactionsUseCase,
+  updateTransactionUseCase: UpdateTransactionUseCase,
   getUserId: GetUserId,
 ) => {
   app.post(
@@ -69,6 +73,37 @@ export const registerTransactionRoutes = (
 
       const transactions = await listTransactionsUseCase.execute(userId)
       return c.json({ items: transactions })
+    },
+  )
+
+  app.put(
+    `${API_PATHS.transactions}/:id`,
+    describeRoute({
+      summary: "Update transaction",
+      tags: ["transactions"],
+      responses: {
+        200: {
+          description: "Updated transaction",
+          content: {
+            "application/json": {
+              schema: resolver(transactionSchema),
+            },
+          },
+        },
+      },
+    }),
+    validator("json", updateTransactionBodySchema),
+    validator("param", updateTransactionParamsSchema),
+    async (c) => {
+      const userId = await getUserId(c)
+      if (userId instanceof Response) {
+        return userId
+      }
+
+      const { id } = c.req.valid("param")
+      const payload = c.req.valid("json")
+      const transaction = await updateTransactionUseCase.execute(userId, id, payload)
+      return c.json(transaction, 200)
     },
   )
 }

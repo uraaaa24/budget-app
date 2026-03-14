@@ -2,13 +2,14 @@ import type { Transaction } from "@/domain/transaction/transaction"
 import type {
   CreateTransactionInput,
   TransactionRepository,
+  UpdateTransactionInput,
 } from "@/domain/transaction/transaction-repository"
 import type { DbClient } from "@/infrastructure/database/client"
 import {
   transactions,
   type TransactionRow,
 } from "@/infrastructure/database/schema/transactions"
-import { desc, eq } from "drizzle-orm"
+import { and, desc, eq } from "drizzle-orm"
 
 export class DrizzleTransactionRepository implements TransactionRepository {
   constructor(private readonly db: DbClient) {}
@@ -45,6 +46,36 @@ export class DrizzleTransactionRepository implements TransactionRepository {
       .orderBy(desc(transactions.createdAt))
 
     return rows.map(toDomainTransaction)
+  }
+
+  async update(
+    userId: string,
+    transactionId: string,
+    input: UpdateTransactionInput,
+  ): Promise<Transaction> {
+    const [row] = await this.db
+      .update(transactions)
+      .set({
+        type: input.type,
+        amount: input.amount,
+        category: input.category,
+        memo: input.memo ?? null,
+        spentAt: new Date(input.spentAt),
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(transactions.id, transactionId),
+          eq(transactions.userId, userId),
+        ),
+      )
+      .returning()
+
+    if (!row) {
+      throw new Error("Transaction not found or unauthorized")
+    }
+
+    return toDomainTransaction(row)
   }
 }
 

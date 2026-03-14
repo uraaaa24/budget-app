@@ -3,6 +3,7 @@ import { ListCategoriesUseCase } from "@/application/category/list-categories-us
 import { CreateTransactionUseCase } from "@/application/transaction/create-transaction-use-case"
 import { logger } from "@/core/logger"
 import { ListTransactionsUseCase } from "@/application/transaction/list-transactions-use-case"
+import { UpdateTransactionUseCase } from "@/application/transaction/update-transaction-use-case"
 import { createCategoryRepository } from "@/infrastructure/category/create-category-repository"
 import { createTransactionRepository } from "@/infrastructure/transaction/create-transaction-repository"
 import { requireUserId } from "@/presentation/http/auth/require-user-id"
@@ -35,6 +36,9 @@ export const createApp = () => {
   const listTransactionsUseCase = new ListTransactionsUseCase(
     transactionRepository,
   )
+  const updateTransactionUseCase = new UpdateTransactionUseCase(
+    transactionRepository,
+  )
   const createCategoryUseCase = new CreateCategoryUseCase(categoryRepository)
   const listCategoriesUseCase = new ListCategoriesUseCase(categoryRepository)
 
@@ -43,6 +47,7 @@ export const createApp = () => {
     app,
     createTransactionUseCase,
     listTransactionsUseCase,
+    updateTransactionUseCase,
     requireUserId,
   )
   registerCategoryRoutes(
