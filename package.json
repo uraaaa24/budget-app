@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=web --filter=backend",
+    "dev:mobile": "pnpm --filter mobile dev",
     "storybook": "pnpm --filter @repo/ui storybook",
     "build-storybook": "pnpm --filter @repo/ui build-storybook",
     "lint": "turbo run lint",
