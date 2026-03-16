@@ -7,6 +7,4 @@ export type Category = {
   emoji: string
   type: TransactionType
   isDefault: boolean
-  createdAt: string
-  updatedAt: string
 }

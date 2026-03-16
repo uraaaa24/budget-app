@@ -8,6 +8,4 @@ export type Transaction = {
   category: string
   memo?: string
   spentAt: string
-  createdAt: string
-  updatedAt: string
 }

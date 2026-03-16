@@ -8,20 +8,40 @@ import {
   uuid,
 } from "drizzle-orm/pg-core"
 
+const TRANSACTION_FIELDS = {
+  ID: "id",
+  USER_ID: "userId",
+  TYPE: "type",
+  AMOUNT: "amount",
+  CATEGORY: "category",
+  MEMO: "memo",
+  SPENT_AT: "spentAt",
+  CREATED_AT: "createdAt",
+  UPDATED_AT: "updatedAt",
+} as const
+
 export const transactions = pgTable(
   DB_TABLES.transactions,
   {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: text("user_id").notNull(),
-    type: text("type", { enum: ["expense", "income"] }).notNull(),
-    amount: doublePrecision("amount").notNull(),
-    category: text("category").notNull(),
-    memo: text("memo"),
-    spentAt: timestamp("spent_at", { withTimezone: true }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
+    [TRANSACTION_FIELDS.ID]: uuid("id").primaryKey().defaultRandom(),
+    [TRANSACTION_FIELDS.USER_ID]: text("user_id").notNull(),
+    [TRANSACTION_FIELDS.TYPE]: text("type", {
+      enum: ["expense", "income"],
+    }).notNull(),
+    [TRANSACTION_FIELDS.AMOUNT]: doublePrecision("amount").notNull(),
+    [TRANSACTION_FIELDS.CATEGORY]: text("category").notNull(),
+    [TRANSACTION_FIELDS.MEMO]: text("memo"),
+    [TRANSACTION_FIELDS.SPENT_AT]: timestamp("spent_at", {
+      withTimezone: true,
+    }).notNull(),
+    [TRANSACTION_FIELDS.CREATED_AT]: timestamp("created_at", {
+      withTimezone: true,
+    })
       .notNull()
       .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
+    [TRANSACTION_FIELDS.UPDATED_AT]: timestamp("updated_at", {
+      withTimezone: true,
+    })
       .notNull()
       .defaultNow(),
   },

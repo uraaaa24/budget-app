@@ -68,6 +68,4 @@ const toDomainCategory = (row: CategoryRow): Category => ({
   emoji: row.emoji,
   type: row.type,
   isDefault: row.isDefault,
-  createdAt: row.createdAt.toISOString(),
-  updatedAt: row.updatedAt.toISOString(),
 })

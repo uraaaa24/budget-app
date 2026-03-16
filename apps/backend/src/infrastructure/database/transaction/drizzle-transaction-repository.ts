@@ -87,6 +87,4 @@ const toDomainTransaction = (row: TransactionRow): Transaction => ({
   category: row.category,
   memo: row.memo ?? undefined,
   spentAt: row.spentAt.toISOString(),
-  createdAt: row.createdAt.toISOString(),
-  updatedAt: row.updatedAt.toISOString(),
 })
