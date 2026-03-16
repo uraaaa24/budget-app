@@ -1,4 +1,7 @@
-import type { Hono } from "hono"
+import type { GetUserId } from "@/presentation/http/auth/get-user-id"
+import type { CreateTransactionUseCase } from "@/usecase/transaction/create-transaction-use-case"
+import type { ListTransactionsUseCase } from "@/usecase/transaction/list-transactions-use-case"
+import type { UpdateTransactionUseCase } from "@/usecase/transaction/update-transaction-use-case"
 import { API_PATHS } from "@repo/validation/api-paths"
 import {
   createTransactionBodySchema,
@@ -7,11 +10,8 @@ import {
   updateTransactionBodySchema,
   updateTransactionParamsSchema,
 } from "@repo/validation/transaction"
+import type { Hono } from "hono"
 import { describeRoute, resolver, validator } from "hono-openapi"
-import type { CreateTransactionUseCase } from "@/application/transaction/create-transaction-use-case"
-import type { ListTransactionsUseCase } from "@/application/transaction/list-transactions-use-case"
-import type { UpdateTransactionUseCase } from "@/application/transaction/update-transaction-use-case"
-import type { GetUserId } from "@/presentation/http/auth/get-user-id"
 
 export const registerTransactionRoutes = (
   app: Hono,
@@ -44,7 +44,10 @@ export const registerTransactionRoutes = (
       }
 
       const payload = c.req.valid("json")
-      const transaction = await createTransactionUseCase.execute(userId, payload)
+      const transaction = await createTransactionUseCase.execute(
+        userId,
+        payload,
+      )
       return c.json(transaction, 201)
     },
   )
@@ -102,7 +105,11 @@ export const registerTransactionRoutes = (
 
       const { id } = c.req.valid("param")
       const payload = c.req.valid("json")
-      const transaction = await updateTransactionUseCase.execute(userId, id, payload)
+      const transaction = await updateTransactionUseCase.execute(
+        userId,
+        id,
+        payload,
+      )
       return c.json(transaction, 200)
     },
   )

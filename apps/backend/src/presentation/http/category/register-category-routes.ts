@@ -1,14 +1,14 @@
-import type { Hono } from "hono"
+import type { GetUserId } from "@/presentation/http/auth/get-user-id"
+import type { CreateCategoryUseCase } from "@/usecase/category/create-category-use-case"
+import type { ListCategoriesUseCase } from "@/usecase/category/list-categories-use-case"
 import { API_PATHS } from "@repo/validation/api-paths"
 import {
   categoryListResponseSchema,
   categorySchema,
   createCategoryBodySchema,
 } from "@repo/validation/category"
+import type { Hono } from "hono"
 import { describeRoute, resolver, validator } from "hono-openapi"
-import type { CreateCategoryUseCase } from "@/application/category/create-category-use-case"
-import type { ListCategoriesUseCase } from "@/application/category/list-categories-use-case"
-import type { GetUserId } from "@/presentation/http/auth/get-user-id"
 
 export const registerCategoryRoutes = (
   app: Hono,
