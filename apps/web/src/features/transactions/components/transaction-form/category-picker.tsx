@@ -25,37 +25,43 @@ export const CategoryPicker = ({
 }: CategoryPickerProps) => {
   const selectedItem = useMemo(
     () =>
-      availableCategories.find((category) => category.name === selectedCategory),
-    [availableCategories, selectedCategory]
+      availableCategories.find(
+        (category) => category.name === selectedCategory,
+      ),
+    [availableCategories, selectedCategory],
   )
 
   return (
     <div className="space-y-2">
-      <Label>Category</Label>
+      <Label className="text-sm font-medium text-foreground">カテゴリ</Label>
       <Select
         value={selectedCategory}
         onValueChange={onChange}
         disabled={availableCategories.length === 0}
       >
-        <SelectTrigger className="w-full">
-          <div className="flex items-center gap-2">
+        <SelectTrigger className="w-full h-10 text-base">
+          <div className="flex items-center gap-2.5">
             {selectedItem && (
               <TwemojiEmoji emoji={selectedItem.emoji} size={18} />
             )}
-            <SelectValue placeholder="Select a category" />
+            <SelectValue placeholder="選択してください" />
           </div>
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-70">
           {availableCategories.length === 0 ? (
             <SelectItem value="__empty__" disabled>
-              No categories available
+              カテゴリがありません
             </SelectItem>
           ) : (
             availableCategories.map((category) => (
-              <SelectItem key={category.id} value={category.name}>
-                <div className="flex items-center gap-2">
-                  <TwemojiEmoji emoji={category.emoji} size={18} />
-                  <span>{category.name}</span>
+              <SelectItem
+                key={category.id}
+                value={category.name}
+                className="py-2.5"
+              >
+                <div className="flex items-center gap-2.5">
+                  {/* <TwemojiEmoji emoji={category.emoji} size={18} /> */}
+                  <span className="text-base">{category.name}</span>
                 </div>
               </SelectItem>
             ))
@@ -63,12 +69,12 @@ export const CategoryPicker = ({
         </SelectContent>
       </Select>
       {availableCategories.length === 0 && (
-        <p className="text-sm text-destructive">
-          No categories available for this type.
+        <p className="text-xs text-destructive">
+          このタイプのカテゴリがありません
         </p>
       )}
       {errorMessage && (
-        <p className="text-sm text-destructive">{errorMessage}</p>
+        <p className="text-xs text-destructive">{errorMessage}</p>
       )}
     </div>
   )

@@ -59,12 +59,12 @@ export const TransactionForm = ({
 
   const availableCategories = useMemo(
     () => categories.filter((item) => item.type === selectedType),
-    [categories, selectedType]
+    [categories, selectedType],
   )
 
   useEffect(() => {
     const isSelectedAvailable = availableCategories.some(
-      (item) => item.name === selectedCategory
+      (item) => item.name === selectedCategory,
     )
     if (isSelectedAvailable) {
       return
@@ -107,7 +107,10 @@ export const TransactionForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="space-y-5 pt-2"
+      >
         <FormField
           control={form.control}
           name="type"
@@ -126,14 +129,17 @@ export const TransactionForm = ({
           control={form.control}
           name="amount"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Amount</FormLabel>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-sm font-medium text-foreground">
+                金額
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="number"
-                  placeholder="1200"
+                  placeholder="例：1500"
                   inputMode="decimal"
+                  className="h-10 text-base"
                 />
               </FormControl>
               <FormMessage />
@@ -171,19 +177,34 @@ export const TransactionForm = ({
           control={form.control}
           name="memo"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Memo (optional)</FormLabel>
+            <FormItem className="space-y-2">
+              <FormLabel className="text-sm font-medium text-foreground">
+                メモ{" "}
+                <span className="text-xs text-muted-foreground">
+                  (任意)
+                </span>
+              </FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Lunch with team" />
+                <Input
+                  {...field}
+                  placeholder="例えば、ランチ"
+                  className="h-10 text-base"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Saving..." : "Save Transaction"}
-        </Button>
+        <div className="pt-4">
+          <Button
+            type="submit"
+            className="w-full h-11 text-base font-semibold"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "保存中..." : "記録する"}
+          </Button>
+        </div>
       </form>
     </Form>
   )

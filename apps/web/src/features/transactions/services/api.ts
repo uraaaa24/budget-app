@@ -5,7 +5,8 @@ import type {
   UpdateTransactionInput,
 } from "@/features/transactions/model/types"
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001"
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001"
 
 type AuthToken = string
 
@@ -13,7 +14,7 @@ class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
-    public detail?: string
+    public detail?: string,
   ) {
     super(message)
     this.name = "ApiError"
@@ -23,7 +24,7 @@ class ApiError extends Error {
 async function fetchWithAuth<T>(
   path: string,
   token: AuthToken,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
@@ -38,7 +39,7 @@ async function fetchWithAuth<T>(
     throw new ApiError(
       `API request failed: ${response.status}`,
       response.status,
-      detail
+      detail,
     )
   }
 
@@ -47,25 +48,22 @@ async function fetchWithAuth<T>(
 
 export const fetchTransactions = async (token: AuthToken) => {
   const data = await fetchWithAuth<{ items: Transaction[] }>(
-    "/api/transactions",
-    token
+    "/transactions",
+    token,
   )
   return data.items
 }
 
 export const fetchCategories = async (token: AuthToken) => {
-  const data = await fetchWithAuth<{ items: Category[] }>(
-    "/api/categories",
-    token
-  )
+  const data = await fetchWithAuth<{ items: Category[] }>("/categories", token)
   return data.items
 }
 
 export const createTransaction = async (
   input: CreateTransactionInput,
-  token: AuthToken
+  token: AuthToken,
 ) => {
-  return fetchWithAuth<Transaction>("/api/transactions", token, {
+  return fetchWithAuth<Transaction>("/transactions", token, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -76,9 +74,9 @@ export const createTransaction = async (
 
 export const updateTransaction = async (
   input: UpdateTransactionInput,
-  token: AuthToken
+  token: AuthToken,
 ) => {
-  return fetchWithAuth<Transaction>(`/api/transactions/${input.id}`, token, {
+  return fetchWithAuth<Transaction>(`/transactions/${input.id}`, token, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -88,7 +86,7 @@ export const updateTransaction = async (
 }
 
 export const deleteTransaction = async (id: string, token: AuthToken) => {
-  return fetchWithAuth<void>(`/api/transactions/${id}`, token, {
+  return fetchWithAuth<void>(`/transactions/${id}`, token, {
     method: "DELETE",
   })
 }

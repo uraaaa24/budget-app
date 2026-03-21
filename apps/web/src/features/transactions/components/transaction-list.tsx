@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { TwemojiEmoji } from "@/components/ui/twemoji-emoji"
 import type { Category, Transaction } from "@/features/transactions/model/types"
@@ -16,8 +15,20 @@ export const TransactionList = ({
   transactions,
   onTransactionPress,
 }: TransactionListProps) => {
-  const formatDate = (value: string) =>
-    format(new Date(value), "yyyy/MM/dd")
+  const formatDate = (value: string) => {
+    const date = new Date(value)
+    const today = new Date()
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    if (date.toDateString() === today.toDateString()) {
+      return "今日"
+    }
+    if (date.toDateString() === yesterday.toDateString()) {
+      return "昨日"
+    }
+    return format(date, "M/d")
+  }
 
   const groupedTransactions = useMemo(() => {
     const yearMap = new Map<number, Map<number, Transaction[]>>()
@@ -52,68 +63,75 @@ export const TransactionList = ({
     for (const category of categories) {
       map.set(
         `${category.type}:${category.name.trim().toLowerCase()}`,
-        category.emoji
+        category.emoji,
       )
     }
     return map
   }, [categories])
 
   return (
-    <ScrollArea className="h-[calc(100vh-200px)]">
-      <div className="space-y-6 p-4">
+    <ScrollArea className="h-[calc(100vh-280px)]">
+      <div className="space-y-6">
         {groupedTransactions.map((yearGroup) => (
-          <div key={yearGroup.year} className="space-y-3">
-            <h3 className="text-sm font-semibold text-slate-900">
-              {yearGroup.year}
+          <div key={yearGroup.year} className="space-y-4">
+            <h3 className="text-xs font-medium text-muted-foreground">
+              {yearGroup.year}年
             </h3>
 
             {yearGroup.months.map((monthGroup) => (
-              <div key={`${yearGroup.year}-${monthGroup.month}`} className="space-y-2">
-                <p className="text-xs font-medium text-slate-500">
+              <div
+                key={`${yearGroup.year}-${monthGroup.month}`}
+                className="space-y-1"
+              >
+                <p className="text-xs text-muted-foreground pl-1 mb-2">
                   {monthGroup.month}月
                 </p>
 
-                {monthGroup.items.map((item) => (
-                  <Card
+                {monthGroup.items.map((item, index) => (
+                  <button
                     key={item.id}
-                    className="cursor-pointer p-3 transition-colors hover:bg-slate-50"
+                    className="w-full text-left p-3 rounded-lg transition-all hover:bg-muted/30 active:bg-muted/50 animate-in fade-in slide-in-from-bottom-1 duration-300"
+                    style={{ animationDelay: `${index * 30}ms` }}
                     onClick={() => onTransactionPress?.(item)}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white">
+                      <div className={`flex h-9 w-9 items-center justify-center rounded-full shrink-0 ${
+                        item.type === "income"
+                          ? "bg-emerald-50 dark:bg-emerald-950/30"
+                          : "bg-rose-50 dark:bg-rose-950/30"
+                      }`}>
                         <TwemojiEmoji
                           emoji={
                             categoryEmojiMap.get(
-                              `${item.type}:${item.category.trim().toLowerCase()}`
+                              `${item.type}:${item.category.trim().toLowerCase()}`,
                             ) ?? "🏷️"
                           }
-                          size={24}
+                          size={20}
                         />
                       </div>
 
-                      <div className="flex-1 space-y-0.5">
-                        <p className="text-sm text-slate-500">
-                          {formatDate(item.spentAt)}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground line-clamp-1">
+                          {item.memo?.trim() || item.category}
                         </p>
-                        <p className="text-sm font-medium text-slate-900 line-clamp-1">
-                          {item.memo?.trim() || "No memo"}
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {formatDate(item.spentAt)}
                         </p>
                       </div>
 
-                      <div className="text-right">
-                        <p
-                          className={`text-base font-semibold ${
+                      <div className="text-right shrink-0">
+                        <p className={`text-base font-semibold tabular-nums ${
                             item.type === "income"
-                              ? "text-emerald-600"
-                              : "text-rose-600"
+                              ? "text-emerald-600 dark:text-emerald-500"
+                              : "text-rose-600 dark:text-rose-500"
                           }`}
                         >
                           {item.type === "income" ? "+" : "-"}
-                          {item.amount.toFixed(0)}
+                          {item.amount.toLocaleString()}
                         </p>
                       </div>
                     </div>
-                  </Card>
+                  </button>
                 ))}
               </div>
             ))}
@@ -121,7 +139,14 @@ export const TransactionList = ({
         ))}
 
         {transactions.length === 0 && (
-          <p className="text-center text-slate-500">No transactions yet.</p>
+          <div className="py-12 text-center space-y-2">
+            <p className="text-sm text-foreground/80">
+              さあ、今日から
+            </p>
+            <p className="text-xs text-muted-foreground">
+              右下のボタンから始めてみましょう
+            </p>
+          </div>
         )}
       </div>
     </ScrollArea>
