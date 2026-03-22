@@ -14,24 +14,24 @@ const typeOptions: { value: TransactionType; label: string }[] = [
 
 export const TypeSelector = ({ selectedType, onSelect }: TypeSelectorProps) => {
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium text-foreground">種類</Label>
+    <div className="space-y-3">
+      <Label className="text-sm text-muted-foreground">種類</Label>
       <ToggleGroup
         type="single"
         value={selectedType}
         onValueChange={(value) => {
           if (value) onSelect(value as TransactionType)
         }}
-        className="grid grid-cols-2 gap-2 w-full"
+        className="grid grid-cols-2 gap-3 w-full"
       >
         {typeOptions.map((option) => (
           <ToggleGroupItem
             key={option.value}
             value={option.value}
-            className={`w-full h-10 text-base font-medium transition-all ${
+            className={`w-full h-12 text-base font-medium rounded-lg transition-colors border ${
               option.value === "expense"
-                ? "data-[state=on]:bg-rose-100 data-[state=on]:text-rose-700 dark:data-[state=on]:bg-rose-950/50 dark:data-[state=on]:text-rose-400"
-                : "data-[state=on]:bg-emerald-100 data-[state=on]:text-emerald-700 dark:data-[state=on]:bg-emerald-950/50 dark:data-[state=on]:text-emerald-400"
+                ? "data-[state=on]:bg-[color:var(--expense-bg)] data-[state=on]:text-[color:var(--expense)] data-[state=on]:border-[color:var(--expense-border)] data-[state=off]:bg-transparent data-[state=off]:text-muted-foreground data-[state=off]:border-border"
+                : "data-[state=on]:bg-[color:var(--income-bg)] data-[state=on]:text-[color:var(--income)] data-[state=on]:border-[color:var(--income-border)] data-[state=off]:bg-transparent data-[state=off]:text-muted-foreground data-[state=off]:border-border"
             }`}
           >
             {option.label}

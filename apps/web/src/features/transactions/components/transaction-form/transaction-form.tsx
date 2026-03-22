@@ -109,8 +109,9 @@ export const TransactionForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-5 pt-2"
+        className="space-y-8"
       >
+        {/* Type Selector */}
         <FormField
           control={form.control}
           name="type"
@@ -125,81 +126,94 @@ export const TransactionForm = ({
           )}
         />
 
+        {/* Amount Input - Prominent */}
         <FormField
           control={form.control}
           name="amount"
           render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel className="text-sm font-medium text-foreground">
+            <FormItem className="space-y-3">
+              <FormLabel className="text-sm text-muted-foreground">
                 金額
               </FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  placeholder="例：1500"
-                  inputMode="decimal"
-                  className="h-10 text-base"
-                />
+                <div className="relative">
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="0"
+                    inputMode="decimal"
+                    min="0"
+                    step="1"
+                    className="h-16 text-3xl font-semibold border-0 bg-transparent px-0 focus-visible:ring-0 focus-visible:ring-offset-0 tabular-nums"
+                    autoFocus
+                  />
+                  <span className="absolute right-0 top-1/2 -translate-y-1/2 text-lg text-muted-foreground">
+                    円
+                  </span>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <CategoryPicker
-                selectedCategory={field.value}
-                availableCategories={availableCategories}
-                onChange={field.onChange}
-              />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Divider */}
+        <div className="border-t border-border" />
 
-        <FormField
-          control={form.control}
-          name="spentAt"
-          render={({ field }) => (
-            <FormItem>
-              <DatePicker value={field.value} onChange={field.onChange} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="memo"
-          render={({ field }) => (
-            <FormItem className="space-y-2">
-              <FormLabel className="text-sm font-medium text-foreground">
-                メモ{" "}
-                <span className="text-xs text-muted-foreground">
-                  (任意)
-                </span>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="例えば、ランチ"
-                  className="h-10 text-base"
+        {/* Details Section */}
+        <div className="space-y-6">
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <CategoryPicker
+                  selectedCategory={field.value}
+                  availableCategories={availableCategories}
+                  onChange={field.onChange}
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
+          <FormField
+            control={form.control}
+            name="spentAt"
+            render={({ field }) => (
+              <FormItem>
+                <DatePicker value={field.value} onChange={field.onChange} />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="memo"
+            render={({ field }) => (
+              <FormItem className="space-y-3">
+                <FormLabel className="text-sm text-muted-foreground">
+                  メモ <span className="text-muted-foreground/70">(任意)</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="例えば、ランチ"
+                    className="h-12 text-base"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Submit Button */}
         <div className="pt-4">
           <Button
             type="submit"
-            className="w-full h-11 text-base font-semibold"
+            className="w-full h-12 text-base font-medium"
             disabled={isSubmitting}
           >
             {isSubmitting ? "保存中..." : "記録する"}

@@ -17,34 +17,38 @@ type DatePickerProps = {
 }
 
 export const DatePicker = ({ value, onChange, errorMessage }: DatePickerProps) => {
+  const today = new Date()
+
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium text-foreground">日付</Label>
+    <div className="space-y-3">
+      <Label className="text-sm text-muted-foreground">日付</Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
-              "w-full h-10 justify-start text-left font-normal text-base",
+              "w-full h-12 justify-start text-left font-normal text-base rounded-lg",
               !value && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-2.5 h-4 w-4" />
+            <CalendarIcon className="mr-3 h-4 w-4" />
             {value ? format(value, "yyyy年M月d日") : <span>選択してください</span>}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 shadow-lg" align="start">
+        <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
             selected={value}
             onSelect={onChange}
             initialFocus
             className="rounded-lg"
+            disabled={(date) => date > today}
+            toDate={today}
           />
         </PopoverContent>
       </Popover>
       {errorMessage && (
-        <p className="text-xs text-destructive">{errorMessage}</p>
+        <p className="text-sm text-destructive">{errorMessage}</p>
       )}
     </div>
   )

@@ -32,20 +32,15 @@ export const CategoryPicker = ({
   )
 
   return (
-    <div className="space-y-2">
-      <Label className="text-sm font-medium text-foreground">カテゴリ</Label>
+    <div className="space-y-3">
+      <Label className="text-sm text-muted-foreground">カテゴリ</Label>
       <Select
         value={selectedCategory}
         onValueChange={onChange}
         disabled={availableCategories.length === 0}
       >
-        <SelectTrigger className="w-full h-10 text-base">
-          <div className="flex items-center gap-2.5">
-            {selectedItem && (
-              <TwemojiEmoji emoji={selectedItem.emoji} size={18} />
-            )}
-            <SelectValue placeholder="選択してください" />
-          </div>
+        <SelectTrigger className="w-full h-12 text-base rounded-lg">
+          <SelectValue placeholder="選択してください" />
         </SelectTrigger>
         <SelectContent className="max-h-70">
           {availableCategories.length === 0 ? (
@@ -57,10 +52,10 @@ export const CategoryPicker = ({
               <SelectItem
                 key={category.id}
                 value={category.name}
-                className="py-2.5"
+                className="py-3"
               >
-                <div className="flex items-center gap-2.5">
-                  {/* <TwemojiEmoji emoji={category.emoji} size={18} /> */}
+                <div className="flex items-center gap-3">
+                  <TwemojiEmoji emoji={category.emoji} size={20} />
                   <span className="text-base">{category.name}</span>
                 </div>
               </SelectItem>
@@ -69,12 +64,12 @@ export const CategoryPicker = ({
         </SelectContent>
       </Select>
       {availableCategories.length === 0 && (
-        <p className="text-xs text-destructive">
+        <p className="text-sm text-destructive">
           このタイプのカテゴリがありません
         </p>
       )}
       {errorMessage && (
-        <p className="text-xs text-destructive">{errorMessage}</p>
+        <p className="text-sm text-destructive">{errorMessage}</p>
       )}
     </div>
   )
