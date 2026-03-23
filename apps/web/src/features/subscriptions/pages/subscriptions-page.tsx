@@ -118,15 +118,15 @@ export const SubscriptionsPage = () => {
 
         {/* Subscription Form Sheet */}
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetContent side="bottom" className="h-[90vh] px-4 sm:px-6">
-            <SheetHeader className="pb-4 border-b border-border">
+          <SheetContent side="bottom" className="h-[90vh] px-6">
+            <SheetHeader className="pb-6 border-b border-border">
               <SheetTitle className="text-lg font-medium">
                 {editingSubscription
                   ? "サブスクリプションを編集"
                   : "サブスクリプションを追加"}
               </SheetTitle>
             </SheetHeader>
-            <div className="mt-6 overflow-y-auto h-[calc(90vh-80px)] px-1">
+            <div className="mt-6 overflow-y-auto h-[calc(90vh-88px)] px-1">
               <SubscriptionForm
                 isSubmitting={isCreating || isUpdating}
                 onSubmit={handleSubmit}
