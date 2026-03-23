@@ -133,20 +133,37 @@ export const SubscriptionsPage = () => {
                 onSuccess={handleSuccess}
                 initialValues={
                   editingSubscription
-                    ? {
-                        id: editingSubscription.id,
-                        name: editingSubscription.name,
-                        amount: editingSubscription.amount.toString(),
-                        currency: editingSubscription.currency,
-                        billingCycle: editingSubscription.billingCycle,
-                        startDate: new Date(editingSubscription.startDate),
-                        nextBillingDate: new Date(
+                    ? (() => {
+                        const nextBillingDate = new Date(
                           editingSubscription.nextBillingDate,
-                        ),
-                        status: editingSubscription.status,
-                        memo: editingSubscription.memo ?? "",
-                        paymentMethod: editingSubscription.paymentMethod ?? "",
-                      }
+                        )
+                        return {
+                          id: editingSubscription.id,
+                          name: editingSubscription.name,
+                          amount: editingSubscription.amount.toString(),
+                          currency: editingSubscription.currency,
+                          billingCycle: editingSubscription.billingCycle,
+                          monthlyDay:
+                            editingSubscription.billingCycle === "monthly"
+                              ? nextBillingDate.getDate()
+                              : undefined,
+                          yearlyMonth:
+                            editingSubscription.billingCycle === "yearly"
+                              ? nextBillingDate.getMonth() + 1
+                              : undefined,
+                          yearlyDay:
+                            editingSubscription.billingCycle === "yearly"
+                              ? nextBillingDate.getDate()
+                              : undefined,
+                          weeklyDay:
+                            editingSubscription.billingCycle === "weekly"
+                              ? nextBillingDate.getDay()
+                              : undefined,
+                          status: editingSubscription.status,
+                          memo: editingSubscription.memo ?? "",
+                          paymentMethod: editingSubscription.paymentMethod ?? "",
+                        }
+                      })()
                     : undefined
                 }
               />

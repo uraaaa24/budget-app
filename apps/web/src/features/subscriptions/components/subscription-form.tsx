@@ -15,12 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import {
   subscriptionFormSchema,
   type SubscriptionFormSchema,
@@ -28,10 +22,6 @@ import {
 import type { CreateSubscriptionInput } from "@/features/subscriptions/model/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { format } from "date-fns"
-import { ja } from "date-fns/locale"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 type SubscriptionFormProps = {
   isSubmitting: boolean
@@ -49,28 +39,65 @@ export const SubscriptionForm = ({
   const form = useForm<SubscriptionFormSchema>({
     resolver: zodResolver(subscriptionFormSchema),
     defaultValues: initialValues
-      ? {
-          ...initialValues,
-          startDate: initialValues.startDate ?? new Date(),
-          nextBillingDate: initialValues.nextBillingDate ?? new Date(),
-        }
+      ? initialValues
       : {
           name: "",
           amount: "",
           currency: "JPY",
           billingCycle: "monthly",
-          startDate: new Date(),
-          nextBillingDate: new Date(),
+          monthlyDay: new Date().getDate(), // Default to today's day
+          yearlyMonth: new Date().getMonth() + 1,
+          yearlyDay: new Date().getDate(),
+          weeklyDay: new Date().getDay(),
           status: "active",
           memo: "",
           paymentMethod: "",
         },
   })
 
+  const billingCycle = form.watch("billingCycle")
+
   const handleSubmit = async (values: SubscriptionFormSchema) => {
     const parsedAmount = Number(values.amount)
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
       return
+    }
+
+    // Calculate next billing date based on billing cycle
+    const now = new Date()
+    let nextBillingDate: Date
+
+    switch (values.billingCycle) {
+      case "monthly": {
+        const day = values.monthlyDay ?? now.getDate()
+        nextBillingDate = new Date(now.getFullYear(), now.getMonth(), day)
+        // If the date has already passed this month, move to next month
+        if (nextBillingDate < now) {
+          nextBillingDate = new Date(now.getFullYear(), now.getMonth() + 1, day)
+        }
+        break
+      }
+      case "yearly": {
+        const month = (values.yearlyMonth ?? now.getMonth() + 1) - 1 // Convert to 0-indexed
+        const day = values.yearlyDay ?? now.getDate()
+        nextBillingDate = new Date(now.getFullYear(), month, day)
+        // If the date has already passed this year, move to next year
+        if (nextBillingDate < now) {
+          nextBillingDate = new Date(now.getFullYear() + 1, month, day)
+        }
+        break
+      }
+      case "weekly": {
+        const targetDay = values.weeklyDay ?? now.getDay()
+        const currentDay = now.getDay()
+        let daysUntilNext = targetDay - currentDay
+        if (daysUntilNext <= 0) {
+          daysUntilNext += 7
+        }
+        nextBillingDate = new Date(now)
+        nextBillingDate.setDate(now.getDate() + daysUntilNext)
+        break
+      }
     }
 
     try {
@@ -79,8 +106,8 @@ export const SubscriptionForm = ({
         amount: parsedAmount,
         currency: values.currency || "JPY",
         billingCycle: values.billingCycle,
-        startDate: values.startDate.toISOString(),
-        nextBillingDate: values.nextBillingDate.toISOString(),
+        startDate: now.toISOString(),
+        nextBillingDate: nextBillingDate.toISOString(),
         status: values.status,
         memo: values.memo.trim() || undefined,
         paymentMethod: values.paymentMethod.trim() || undefined,
@@ -181,47 +208,137 @@ export const SubscriptionForm = ({
             )}
           />
 
-          {/* Next Billing Date */}
-          <FormField
-            control={form.control}
-            name="nextBillingDate"
-            render={({ field }) => (
-              <FormItem className="space-y-2.5">
-                <FormLabel className="text-sm font-medium text-muted-foreground">
-                  次回の引き落とし日
-                </FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
+          {/* Billing Date - Monthly */}
+          {billingCycle === "monthly" && (
+            <FormField
+              control={form.control}
+              name="monthlyDay"
+              render={({ field }) => (
+                <FormItem className="space-y-2.5">
+                  <FormLabel className="text-sm font-medium text-muted-foreground">
+                    引き落とし日
+                  </FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={field.value?.toString()}
+                  >
                     <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full h-12 justify-start text-left font-normal text-base",
-                          !field.value && "text-muted-foreground",
-                        )}
-                      >
-                        <CalendarIcon className="mr-3 h-4 w-4" />
-                        {field.value ? (
-                          format(field.value, "yyyy年M月d日", { locale: ja })
-                        ) : (
-                          <span>日付を選択</span>
-                        )}
-                      </Button>
+                      <SelectTrigger className="h-12 text-base">
+                        <SelectValue placeholder="日を選択" />
+                      </SelectTrigger>
                     </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                    <SelectContent>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>
+                          毎月{day}日
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
+          {/* Billing Date - Yearly */}
+          {billingCycle === "yearly" && (
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="yearlyMonth"
+                render={({ field }) => (
+                  <FormItem className="space-y-2.5">
+                    <FormLabel className="text-sm font-medium text-muted-foreground">
+                      引き落とし月
+                    </FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="h-12 text-base">
+                          <SelectValue placeholder="月を選択" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+                          <SelectItem key={month} value={month.toString()}>
+                            {month}月
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="yearlyDay"
+                render={({ field }) => (
+                  <FormItem className="space-y-2.5">
+                    <FormLabel className="text-sm font-medium text-muted-foreground">
+                      引き落とし日
+                    </FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="h-12 text-base">
+                          <SelectValue placeholder="日を選択" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                          <SelectItem key={day} value={day.toString()}>
+                            {day}日
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
+
+          {/* Billing Date - Weekly */}
+          {billingCycle === "weekly" && (
+            <FormField
+              control={form.control}
+              name="weeklyDay"
+              render={({ field }) => (
+                <FormItem className="space-y-2.5">
+                  <FormLabel className="text-sm font-medium text-muted-foreground">
+                    引き落とし曜日
+                  </FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={field.value?.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-12 text-base">
+                        <SelectValue placeholder="曜日を選択" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="0">毎週日曜日</SelectItem>
+                      <SelectItem value="1">毎週月曜日</SelectItem>
+                      <SelectItem value="2">毎週火曜日</SelectItem>
+                      <SelectItem value="3">毎週水曜日</SelectItem>
+                      <SelectItem value="4">毎週木曜日</SelectItem>
+                      <SelectItem value="5">毎週金曜日</SelectItem>
+                      <SelectItem value="6">毎週土曜日</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
           {/* Status */}
           <FormField

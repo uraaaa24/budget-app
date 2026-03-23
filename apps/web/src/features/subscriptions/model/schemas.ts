@@ -5,8 +5,13 @@ export const subscriptionFormSchema = z.object({
   amount: z.string().min(1, "金額は必須です"),
   currency: z.string().default("JPY"),
   billingCycle: z.enum(["monthly", "yearly", "weekly"]),
-  startDate: z.date(),
-  nextBillingDate: z.date(),
+  // Monthly: day of month (1-31)
+  monthlyDay: z.number().min(1).max(31).optional(),
+  // Yearly: month (1-12) and day (1-31)
+  yearlyMonth: z.number().min(1).max(12).optional(),
+  yearlyDay: z.number().min(1).max(31).optional(),
+  // Weekly: day of week (0=Sunday, 6=Saturday)
+  weeklyDay: z.number().min(0).max(6).optional(),
   status: z.enum(["active", "paused", "canceled"]),
   memo: z.string(),
   paymentMethod: z.string(),
