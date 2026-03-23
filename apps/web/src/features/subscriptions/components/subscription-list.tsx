@@ -1,7 +1,11 @@
 import type { Subscription } from "@/features/subscriptions/model/types"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
 import { Plus } from "lucide-react"
+import type { VariantProps } from "class-variance-authority"
+import type { badgeVariants } from "@/components/ui/badge"
 
 type SubscriptionListProps = {
   subscriptions: Subscription[]
@@ -9,14 +13,27 @@ type SubscriptionListProps = {
   onAddPress?: () => void
 }
 
-const getStatusBadgeStyles = (status: Subscription["status"]) => {
+const getStatusBadgeVariant = (
+  status: Subscription["status"],
+): VariantProps<typeof badgeVariants>["variant"] => {
   switch (status) {
     case "active":
-      return "bg-[color:var(--income-bg)] text-[color:var(--income)] border-[color:var(--income-border)]"
+      return "default"
     case "paused":
-      return "bg-muted text-muted-foreground border-border"
+      return "secondary"
     case "canceled":
-      return "bg-[color:var(--expense-bg)] text-[color:var(--expense)] border-[color:var(--expense-border)]"
+      return "destructive"
+  }
+}
+
+const getStatusBadgeClassName = (status: Subscription["status"]) => {
+  switch (status) {
+    case "active":
+      return "bg-[color:var(--income-bg)] text-[color:var(--income)] border-[color:var(--income-border)] hover:bg-[color:var(--income-bg)]"
+    case "paused":
+      return ""
+    case "canceled":
+      return "bg-[color:var(--expense-bg)] text-[color:var(--expense)] border-[color:var(--expense-border)] hover:bg-[color:var(--expense-bg)]"
   }
 }
 
@@ -53,13 +70,14 @@ export const SubscriptionList = ({
   return (
     <div className="space-y-6">
       {/* Inline Add Button */}
-      <button
+      <Button
+        variant="outline"
         onClick={onAddPress}
-        className="w-full px-4 py-4 rounded-lg border border-dashed border-border hover:border-primary hover:bg-accent/30 transition-colors flex items-center justify-center gap-2 text-muted-foreground hover:text-foreground"
+        className="w-full h-auto px-4 py-4 border-dashed hover:border-primary hover:bg-accent/30 text-muted-foreground hover:text-foreground"
       >
-        <Plus className="h-5 w-5" />
+        <Plus className="h-5 w-5 mr-2" />
         <span className="text-base font-medium">新しいサブスクリプションを追加</span>
-      </button>
+      </Button>
 
       {subscriptions.length === 0 && (
         <div className="py-12 text-center space-y-2">
@@ -75,9 +93,10 @@ export const SubscriptionList = ({
           </h3>
           <div className="divide-y divide-border">
             {activeSubscriptions.map((subscription) => (
-              <button
+              <Button
                 key={subscription.id}
-                className="w-full text-left px-3 py-3 transition-colors hover:bg-accent/50 active:bg-accent"
+                variant="ghost"
+                className="w-full h-auto justify-start text-left px-3 py-3 rounded-none hover:bg-accent/50 active:bg-accent"
                 onClick={() => onSubscriptionPress?.(subscription)}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -104,7 +123,7 @@ export const SubscriptionList = ({
                     )}
                   </div>
                 </div>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -117,9 +136,10 @@ export const SubscriptionList = ({
           </h3>
           <div className="divide-y divide-border">
             {otherSubscriptions.map((subscription) => (
-              <button
+              <Button
                 key={subscription.id}
-                className="w-full text-left px-3 py-3 transition-colors hover:bg-accent/50 active:bg-accent"
+                variant="ghost"
+                className="w-full h-auto justify-start text-left px-3 py-3 rounded-none hover:bg-accent/50 active:bg-accent"
                 onClick={() => onSubscriptionPress?.(subscription)}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -128,11 +148,12 @@ export const SubscriptionList = ({
                       <p className="text-base font-medium text-foreground">
                         {subscription.name}
                       </p>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded border ${getStatusBadgeStyles(subscription.status)}`}
+                      <Badge
+                        variant={getStatusBadgeVariant(subscription.status)}
+                        className={getStatusBadgeClassName(subscription.status)}
                       >
                         {getStatusLabel(subscription.status)}
-                      </span>
+                      </Badge>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <span>{getCycleLabel(subscription.billingCycle)}</span>
@@ -144,7 +165,7 @@ export const SubscriptionList = ({
                     </p>
                   </div>
                 </div>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
