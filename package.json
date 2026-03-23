@@ -18,7 +18,9 @@
     "db:reset": "pnpm supabase db reset",
     "db:push": "pnpm supabase db push",
     "db:push:local": "pnpm supabase db push --local",
-    "db:migration:new": "pnpm supabase migration new"
+    "db:migration:new": "pnpm supabase migration new",
+    "db:migrate": "pnpm db:start && pnpm db:reset",
+    "db:setup": "pnpm db:start && pnpm db:reset"
   },
   "dependencies": {
     "react-native-css-interop": "^0.2.1"
