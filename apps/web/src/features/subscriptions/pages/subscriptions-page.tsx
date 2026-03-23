@@ -126,7 +126,7 @@ export const SubscriptionsPage = () => {
                   : "サブスクリプションを追加"}
               </SheetTitle>
             </SheetHeader>
-            <div className="mt-6 overflow-y-auto h-[calc(90vh-80px)]">
+            <div className="mt-6 overflow-y-auto h-[calc(90vh-80px)] px-1">
               <SubscriptionForm
                 isSubmitting={isCreating || isUpdating}
                 onSubmit={handleSubmit}

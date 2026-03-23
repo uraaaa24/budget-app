@@ -49,15 +49,3 @@ export type CreateSubscriptionInput = {
 export type UpdateSubscriptionInput = CreateSubscriptionInput & {
   id: string
 }
-
-export type SubscriptionFormValues = {
-  name: string
-  amount: string
-  currency: string
-  billingCycle: SubscriptionBillingCycle
-  startDate: Date
-  nextBillingDate: Date
-  status: SubscriptionStatus
-  memo: string
-  paymentMethod: string
-}

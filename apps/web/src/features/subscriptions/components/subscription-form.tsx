@@ -21,13 +21,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { subscriptionFormSchema } from "@/features/subscriptions/model/schemas"
-import type {
-  CreateSubscriptionInput,
-  SubscriptionFormValues,
-} from "@/features/subscriptions/model/types"
+import {
+  subscriptionFormSchema,
+  type SubscriptionFormSchema,
+} from "@/features/subscriptions/model/schemas"
+import type { CreateSubscriptionInput } from "@/features/subscriptions/model/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
@@ -38,7 +37,7 @@ type SubscriptionFormProps = {
   isSubmitting: boolean
   onSubmit: (input: CreateSubscriptionInput) => Promise<void>
   onSuccess?: () => void
-  initialValues?: Partial<SubscriptionFormValues> & { id?: string }
+  initialValues?: Partial<SubscriptionFormSchema> & { id?: string }
 }
 
 export const SubscriptionForm = ({
@@ -47,7 +46,7 @@ export const SubscriptionForm = ({
   onSuccess,
   initialValues,
 }: SubscriptionFormProps) => {
-  const form = useForm<SubscriptionFormValues>({
+  const form = useForm<SubscriptionFormSchema>({
     resolver: zodResolver(subscriptionFormSchema),
     defaultValues: initialValues
       ? {
@@ -68,7 +67,7 @@ export const SubscriptionForm = ({
         },
   })
 
-  const handleSubmit = async (values: SubscriptionFormValues) => {
+  const handleSubmit = async (values: SubscriptionFormSchema) => {
     const parsedAmount = Number(values.amount)
     if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
       return
@@ -95,20 +94,20 @@ export const SubscriptionForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         {/* Name */}
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel className="text-sm text-muted-foreground">
+            <FormItem className="space-y-2.5">
+              <FormLabel className="text-sm font-medium text-muted-foreground">
                 サービス名
               </FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="例: Netflix"
+                  placeholder="Netflix, Spotify など"
                   className="h-12 text-base"
                   autoFocus
                 />
@@ -123,8 +122,8 @@ export const SubscriptionForm = ({
           control={form.control}
           name="amount"
           render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel className="text-sm text-muted-foreground">
+            <FormItem className="space-y-2.5">
+              <FormLabel className="text-sm font-medium text-muted-foreground">
                 金額
               </FormLabel>
               <FormControl>
@@ -149,18 +148,18 @@ export const SubscriptionForm = ({
         />
 
         {/* Divider */}
-        <div className="border-t border-border" />
+        <div className="border-t border-border my-6" />
 
-        {/* Details Section */}
-        <div className="space-y-6">
+        {/* Basic Details */}
+        <div className="space-y-5">
           {/* Billing Cycle */}
           <FormField
             control={form.control}
             name="billingCycle"
             render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel className="text-sm text-muted-foreground">
-                  請求サイクル
+              <FormItem className="space-y-2.5">
+                <FormLabel className="text-sm font-medium text-muted-foreground">
+                  支払いのタイミング
                 </FormLabel>
                 <Select
                   onValueChange={field.onChange}
@@ -172,38 +171,9 @@ export const SubscriptionForm = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="monthly">月額</SelectItem>
-                    <SelectItem value="yearly">年額</SelectItem>
-                    <SelectItem value="weekly">週額</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Status */}
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel className="text-sm text-muted-foreground">
-                  ステータス
-                </FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger className="h-12 text-base">
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="active">有効</SelectItem>
-                    <SelectItem value="paused">一時停止</SelectItem>
-                    <SelectItem value="canceled">解約済み</SelectItem>
+                    <SelectItem value="monthly">毎月</SelectItem>
+                    <SelectItem value="yearly">毎年</SelectItem>
+                    <SelectItem value="weekly">毎週</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -216,9 +186,9 @@ export const SubscriptionForm = ({
             control={form.control}
             name="nextBillingDate"
             render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel className="text-sm text-muted-foreground">
-                  次回請求日
+              <FormItem className="space-y-2.5">
+                <FormLabel className="text-sm font-medium text-muted-foreground">
+                  次回の引き落とし日
                 </FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -253,19 +223,55 @@ export const SubscriptionForm = ({
             )}
           />
 
+          {/* Status */}
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem className="space-y-2.5">
+                <FormLabel className="text-sm font-medium text-muted-foreground">
+                  状態
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="h-12 text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="active">利用中</SelectItem>
+                    <SelectItem value="paused">一時停止中</SelectItem>
+                    <SelectItem value="canceled">解約済み</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Optional Details */}
+        <div className="space-y-5 pt-2">
+          <p className="text-xs font-medium text-muted-foreground/80">
+            追加情報（任意）
+          </p>
+
           {/* Payment Method */}
           <FormField
             control={form.control}
             name="paymentMethod"
             render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel className="text-sm text-muted-foreground">
-                  支払い方法 <span className="text-muted-foreground/70">(任意)</span>
+              <FormItem className="space-y-2.5">
+                <FormLabel className="text-sm font-medium text-muted-foreground">
+                  支払い方法
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="例: クレジットカード"
+                    placeholder="クレジットカード、口座振替 など"
                     className="h-12 text-base"
                   />
                 </FormControl>
@@ -279,14 +285,14 @@ export const SubscriptionForm = ({
             control={form.control}
             name="memo"
             render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel className="text-sm text-muted-foreground">
-                  メモ <span className="text-muted-foreground/70">(任意)</span>
+              <FormItem className="space-y-2.5">
+                <FormLabel className="text-sm font-medium text-muted-foreground">
+                  メモ
                 </FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="例: プレミアムプラン"
+                    placeholder="プラン名やその他メモ"
                     className="h-12 text-base"
                   />
                 </FormControl>
@@ -297,13 +303,13 @@ export const SubscriptionForm = ({
         </div>
 
         {/* Submit Button */}
-        <div className="pt-4">
+        <div className="pt-6">
           <Button
             type="submit"
             className="w-full h-12 text-base font-medium"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "保存中..." : "保存する"}
+            {isSubmitting ? "保存中..." : "保存"}
           </Button>
         </div>
       </form>
