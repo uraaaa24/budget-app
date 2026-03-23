@@ -61,7 +61,13 @@ export default function Header() {
             >
               取引履歴
             </Link>
-            {/* 追加のメニューアイテムをここに */}
+            <Link
+              to="/subscriptions"
+              className="block px-3 py-2 rounded-lg text-base font-medium transition-colors hover:bg-accent"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              サブスクリプション
+            </Link>
           </nav>
         </SheetContent>
       </Sheet>
