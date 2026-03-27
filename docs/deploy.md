@@ -7,20 +7,25 @@ This document describes how to deploy the Budget App to production.
 | Layer | Service | Purpose | Free Tier |
 |-------|---------|---------|-----------|
 | **Web** | Vercel | Frontend UI delivery (SSR) | Yes |
-| **Backend** | Render | API server | Yes (with sleep) |
+| **Backend** | Cloudflare Workers | API server (edge runtime) | Yes |
 | **Database** | Supabase | PostgreSQL database | Yes |
 
 ### Why This Architecture?
 
-- **Cost**: All services offer free tiers suitable for low-traffic applications
+- **Cost**: All services offer generous free tiers suitable for low-traffic applications
+- **Performance**: Cloudflare Workers runs on global edge network with <50ms cold start
+- **No Sleep**: Unlike Render free tier, Cloudflare Workers doesn't sleep after inactivity
 - **Simplicity**: Minimal configuration, Git-based deployments
 - **Maintainability**: Each service has clear responsibilities and well-documented APIs
 - **Scalability**: Easy to upgrade when traffic increases
 
 ### Trade-offs
 
-- **Render Free Tier**: Backend will sleep after 15 minutes of inactivity. First request after sleep takes ~30 seconds to wake up.
+- **Cloudflare Workers Free Tier**: 100,000 requests/day, 10ms CPU time per request
+  - Sufficient for most personal budget apps
+  - CPU time limit requires efficient code (our app is well within limits)
 - **Supabase Free Tier**: 500MB database, 2GB bandwidth/month, auto-pauses after 1 week of inactivity
+  - Supabase Connection Pooler provides HTTP-based access (required for Workers)
 - **Vercel Free Tier**: 100GB bandwidth/month, commercial use allowed
 
 ## Prerequisites
@@ -126,47 +131,91 @@ All migrations should show as "Applied".
    - Your Vercel deployment URL (e.g., `https://budget-app.vercel.app`)
    - For testing: `http://localhost:3000`
 
-## Step 3: Backend Deployment (Render)
+## Step 3: Backend Deployment (Cloudflare Workers)
 
-### Create Web Service
+### Install Wrangler CLI
 
-1. Go to https://dashboard.render.com
-2. Click "New +" → "Web Service"
-3. Connect your GitHub repository
-4. Configure:
-   - **Name**: `budget-app-backend`
-   - **Region**: Same as Supabase (for lower latency)
-   - **Branch**: `main`
-   - **Root Directory**: `apps/backend`
-   - **Runtime**: Node
-   - **Build Command**: `pnpm install && pnpm run build`
-   - **Start Command**: `pnpm run start`
-   - **Plan**: Free
-
-### Set Environment Variables
-
-In Render dashboard → Environment tab, add:
-
+```sh
+npm install -g wrangler
 ```
-DATABASE_URL=<Supabase connection string>
-CLERK_SECRET_KEY=<Clerk secret key>
-API_URL=<Will be your Render URL, e.g., https://budget-app-backend.onrender.com>
-NODE_ENV=production
+
+### Login to Cloudflare
+
+```sh
+wrangler login
 ```
+
+This will open a browser to authenticate with your Cloudflare account.
+
+### Set Environment Variables (Secrets)
+
+Cloudflare Workers requires sensitive values to be set as secrets:
+
+```sh
+# Navigate to backend directory
+cd apps/backend
+
+# Set secrets (replace with actual values)
+wrangler secret put DATABASE_URL
+# Paste: postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
+
+wrangler secret put CLERK_SECRET_KEY
+# Paste: your_clerk_secret_key
+
+wrangler secret put API_URL
+# Paste: https://budget-app-backend.<your-subdomain>.workers.dev
+```
+
+**Note**: `API_URL` will be your Workers URL. You can find it after first deployment.
 
 ### Deploy
 
-1. Click "Create Web Service"
-2. Wait for initial deployment (~5 minutes)
-3. Once deployed, copy the service URL (e.g., `https://budget-app-backend.onrender.com`)
-4. Update `API_URL` environment variable with this URL
-5. Trigger redeploy: Manual Deploy → Deploy latest commit
+```sh
+# From apps/backend directory
+pnpm run deploy
+```
+
+Or manually:
+
+```sh
+wrangler deploy
+```
+
+### Get Your Worker URL
+
+After deployment, Wrangler will output:
+
+```
+Published budget-app-backend (X.XX sec)
+  https://budget-app-backend.<your-subdomain>.workers.dev
+```
+
+Copy this URL - you'll need it for:
+1. Updating `API_URL` secret (run `wrangler secret put API_URL` again)
+2. Setting `VITE_API_BASE_URL` in Vercel (next step)
+
+### Update API_URL Secret
+
+```sh
+wrangler secret put API_URL
+# Paste the Worker URL you just copied
+```
 
 ### Verify
 
 ```sh
-# Test health endpoint (create one if needed)
-curl https://your-backend-url.onrender.com/health
+# Test your deployed API
+curl https://budget-app-backend.<your-subdomain>.workers.dev/health
+```
+
+### Viewing Logs
+
+```sh
+# Real-time logs
+wrangler tail
+
+# View logs in Cloudflare Dashboard
+# Dashboard → Workers & Pages → budget-app-backend → Logs
 ```
 
 ## Step 4: Frontend Deployment (Vercel)
@@ -188,8 +237,14 @@ curl https://your-backend-url.onrender.com/health
 In Vercel dashboard → Settings → Environment Variables, add:
 
 ```
-VITE_API_BASE_URL=<Your Render backend URL>
+VITE_API_BASE_URL=<Your Cloudflare Workers URL>
 VITE_CLERK_PUBLISHABLE_KEY=<Clerk publishable key>
+```
+
+Example:
+```
+VITE_API_BASE_URL=https://budget-app-backend.<your-subdomain>.workers.dev
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 ```
 
 Set for: **Production**, **Preview**, and **Development** environments.
@@ -231,6 +286,23 @@ Set for: **Production**, **Preview**, and **Development** environments.
 
 ### Code Changes
 
+#### Backend (Cloudflare Workers)
+
+Cloudflare Workers deployment is **manual** - it does not auto-deploy on git push.
+
+```sh
+# Make changes locally
+cd apps/backend
+
+# Test locally first
+pnpm run dev
+
+# Deploy to production
+pnpm run deploy
+```
+
+#### Frontend (Vercel)
+
 ```sh
 # Make changes locally
 git add .
@@ -239,7 +311,6 @@ git push origin main
 ```
 
 - **Vercel**: Automatically deploys on push to `main`
-- **Render**: Automatically deploys on push to `main`
 
 ### Database Schema Changes
 
@@ -267,11 +338,22 @@ supabase db push
 
 ## Rollback
 
-### Backend (Render)
+### Backend (Cloudflare Workers)
 
-1. Go to Render dashboard → Your Service → Events
-2. Find previous successful deployment
-3. Click "Rollback to this version"
+Cloudflare Workers supports rollback via Wrangler:
+
+```sh
+# List recent deployments
+wrangler deployments list
+
+# Rollback to a specific version
+wrangler rollback <deployment-id>
+```
+
+Or via Cloudflare Dashboard:
+1. Go to Cloudflare Dashboard → Workers & Pages → budget-app-backend
+2. Click "Deployments" tab
+3. Find previous version → Click "Rollback"
 
 ### Frontend (Vercel)
 
@@ -292,16 +374,17 @@ For severe cases, restore from backup (Supabase Pro feature).
 
 ### Backend not responding
 
-- Check Render logs for errors
-- Verify environment variables are set correctly
+- Check Cloudflare Workers logs: `wrangler tail` or Dashboard → Logs
+- Verify secrets are set correctly: `wrangler secret list`
 - Check database connection (Supabase may pause after inactivity)
-- Free tier: First request may take ~30s to wake service
+- Verify Supabase Connection Pooler URL is correct (should use port 6543)
+- Check CPU time limits (should be well under 10ms for our app)
 
 ### Frontend can't connect to backend
 
-- Verify `VITE_API_BASE_URL` matches Render URL
-- Check CORS configuration in backend
-- Check Render service is running (not failed deployment)
+- Verify `VITE_API_BASE_URL` matches Cloudflare Workers URL
+- Check CORS configuration in backend (apps/backend/src/presentation/http/create-app.ts)
+- Check Workers deployment succeeded: `wrangler deployments list`
 
 ### Authentication not working
 
@@ -319,8 +402,8 @@ For severe cases, restore from backup (Supabase Pro feature).
 
 ### Free Tier Limits
 
+- **Cloudflare Workers**: 100,000 requests/day, 10ms CPU time/request
 - **Vercel**: 100GB bandwidth/month
-- **Render**: 750 hours/month (enough for 1 service), sleeps after 15min inactivity
 - **Supabase**: 500MB database, 2GB bandwidth/month
 - **Clerk**: 10,000 MAU (Monthly Active Users)
 
@@ -328,17 +411,27 @@ For severe cases, restore from backup (Supabase Pro feature).
 
 Consider upgrading when:
 
-- Render sleep time becomes disruptive → Upgrade to Starter ($7/month)
+- Workers requests exceed 100,000/day → Workers Paid ($5/month for 10M requests)
 - Database exceeds 500MB → Supabase Pro ($25/month)
-- Traffic exceeds Vercel limits → Pro ($20/month)
+- Traffic exceeds Vercel limits → Vercel Pro ($20/month)
 - Need more MAU → Clerk Pro ($25/month)
 
 ### Monitoring Usage
 
+- **Cloudflare Workers**: Dashboard → Workers & Pages → Analytics
 - **Vercel**: Dashboard → Usage
-- **Render**: Dashboard → Billing
 - **Supabase**: Dashboard → Settings → Billing
 - **Clerk**: Dashboard → Usage
+
+### Daily Monitoring Commands
+
+```sh
+# Check Workers usage and errors
+wrangler tail
+
+# View analytics in dashboard
+# Cloudflare Dashboard → Workers & Pages → budget-app-backend → Analytics
+```
 
 ## Next Steps
 
