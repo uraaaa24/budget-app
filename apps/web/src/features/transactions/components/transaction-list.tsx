@@ -14,47 +14,39 @@ export const TransactionList = ({
   transactions,
   onTransactionPress,
 }: TransactionListProps) => {
-  const formatDate = (value: string) => {
-    const date = new Date(value)
-    const today = new Date()
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
-
-    if (date.toDateString() === today.toDateString()) {
-      return "今日"
-    }
-    if (date.toDateString() === yesterday.toDateString()) {
-      return "昨日"
-    }
-    return format(date, "M/d")
-  }
-
+  // Group transactions by date (M/d format)
   const groupedTransactions = useMemo(() => {
-    const yearMap = new Map<number, Map<number, Transaction[]>>()
+    const dateMap = new Map<string, Transaction[]>()
 
-    for (const item of transactions) {
+    // Sort transactions by date (newest first)
+    const sortedTransactions = [...transactions].sort(
+      (a, b) => new Date(b.spentAt).getTime() - new Date(a.spentAt).getTime(),
+    )
+
+    for (const item of sortedTransactions) {
       const date = new Date(item.spentAt)
-      const year = date.getFullYear()
-      const month = date.getMonth() + 1
-      const monthMap = yearMap.get(year) ?? new Map<number, Transaction[]>()
-      const list = monthMap.get(month) ?? []
+      const today = new Date()
+      const yesterday = new Date(today)
+      yesterday.setDate(yesterday.getDate() - 1)
 
+      let dateLabel: string
+      if (date.toDateString() === today.toDateString()) {
+        dateLabel = "今日"
+      } else if (date.toDateString() === yesterday.toDateString()) {
+        dateLabel = "昨日"
+      } else {
+        dateLabel = format(date, "M/d")
+      }
+
+      const list = dateMap.get(dateLabel) ?? []
       list.push(item)
-      monthMap.set(month, list)
-      yearMap.set(year, monthMap)
+      dateMap.set(dateLabel, list)
     }
 
-    return Array.from(yearMap.entries())
-      .sort((a, b) => b[0] - a[0])
-      .map(([year, monthMap]) => ({
-        year,
-        months: Array.from(monthMap.entries())
-          .sort((a, b) => b[0] - a[0])
-          .map(([month, items]) => ({
-            month,
-            items,
-          })),
-      }))
+    return Array.from(dateMap.entries()).map(([dateLabel, items]) => ({
+      dateLabel,
+      items,
+    }))
   }, [transactions])
 
   const categoryEmojiMap = useMemo(() => {
@@ -80,71 +72,67 @@ export const TransactionList = ({
   }
 
   return (
-    <div className="space-y-8">
-      {groupedTransactions.map((yearGroup) => (
-        <div key={yearGroup.year} className="space-y-6">
-          <h3 className="text-sm font-medium text-muted-foreground">
-            {yearGroup.year}年
-          </h3>
+    <div className="space-y-6">
+      {groupedTransactions.map((group) => (
+        <div key={group.dateLabel} className="space-y-3">
+          <p className="text-sm font-medium text-muted-foreground px-1">
+            {group.dateLabel}
+          </p>
 
-          {yearGroup.months.map((monthGroup) => (
-            <div
-              key={`${yearGroup.year}-${monthGroup.month}`}
-              className="space-y-3"
-            >
-              <p className="text-sm text-muted-foreground px-1">
-                {monthGroup.month}月
-              </p>
+          <div className="space-y-2">
+            {group.items.map((item) => {
+              const hasMemo = Boolean(item.memo?.trim())
+              const isIncome = item.type === "income"
 
-              <div className="divide-y divide-border">
-                {monthGroup.items.map((item) => (
-                  <button
-                    key={item.id}
-                    className="w-full text-left px-3 py-3 transition-colors hover:bg-accent/50 active:bg-accent"
-                    onClick={() => onTransactionPress?.(item)}
-                  >
-                    <div className="flex items-center gap-4">
-                      {/* Emoji - Simple, no decorative circle */}
-                      <div className="shrink-0">
-                        <TwemojiEmoji
-                          emoji={
-                            categoryEmojiMap.get(
-                              `${item.type}:${item.category.trim().toLowerCase()}`,
-                            ) ?? "🏷️"
-                          }
-                          size={30}
-                        />
-                      </div>
-
-                      {/* Content */}
-                      <div className="flex-1 min-w-0 space-y-0.5">
-                        <p className="text-base font-medium text-foreground line-clamp-1">
-                          {item.memo?.trim() || item.category}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {formatDate(item.spentAt)}
-                        </p>
-                      </div>
-
-                      {/* Amount */}
-                      <div className="text-right shrink-0">
-                        <p
-                          className={`text-lg font-semibold tabular-nums ${
-                            item.type === "income"
-                              ? "text-[color:var(--income)]"
-                              : "text-[color:var(--expense)]"
-                          }`}
-                        >
-                          {item.type === "income" ? "+" : "-"}
-                          {item.amount.toLocaleString()}
-                        </p>
-                      </div>
+              return (
+                <button
+                  key={item.id}
+                  className="w-full text-left rounded-xl bg-accent/30 hover:bg-accent/50 active:bg-accent transition-colors px-4 py-3.5"
+                  onClick={() => onTransactionPress?.(item)}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="shrink-0">
+                      <TwemojiEmoji
+                        emoji={
+                          categoryEmojiMap.get(
+                            `${item.type}:${item.category.trim().toLowerCase()}`,
+                          ) ?? "🏷️"
+                        }
+                        size={28}
+                      />
                     </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
+
+                    {hasMemo ? (
+                      <div className="flex-1 min-w-0 space-y-1">
+                        <p className="text-base font-medium text-foreground line-clamp-1 leading-tight">
+                          {item.category}
+                        </p>
+                        <p className="text-xs text-muted-foreground/80 leading-none">
+                          {item.memo}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex-1 min-w-0 flex items-center h-10">
+                        <p className="text-base font-medium text-foreground line-clamp-1">
+                          {item.category}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="text-right shrink-0">
+                      <p
+                        className={`text-lg font-semibold tabular-nums ${
+                          isIncome ? "text-green-600" : "text-red-600"
+                        }`}
+                      >
+                        {isIncome ? "+" : ""}¥{item.amount.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
         </div>
       ))}
     </div>

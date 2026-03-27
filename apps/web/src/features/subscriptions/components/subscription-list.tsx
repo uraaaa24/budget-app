@@ -29,11 +29,11 @@ const getStatusBadgeVariant = (
 const getStatusBadgeClassName = (status: Subscription["status"]) => {
   switch (status) {
     case "active":
-      return "bg-[color:var(--income-bg)] text-[color:var(--income)] border-[color:var(--income-border)] hover:bg-[color:var(--income-bg)]"
+      return "bg-green-50 text-green-600 border-green-200 hover:bg-green-50"
     case "paused":
       return ""
     case "canceled":
-      return "bg-[color:var(--expense-bg)] text-[color:var(--expense)] border-[color:var(--expense-border)] hover:bg-[color:var(--expense-bg)]"
+      return "bg-red-50 text-red-600 border-red-200 hover:bg-red-50"
   }
 }
 

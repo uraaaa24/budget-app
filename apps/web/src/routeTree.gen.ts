@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SubscriptionsRouteImport } from './routes/subscriptions'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SubscriptionsRoute = SubscriptionsRouteImport.update({
@@ -23,6 +24,11 @@ const SignInRoute = SignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/sign-in': typeof SignInRoute
   '/subscriptions': typeof SubscriptionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/sign-in': typeof SignInRoute
   '/subscriptions': typeof SubscriptionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/sign-in': typeof SignInRoute
   '/subscriptions': typeof SubscriptionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/subscriptions'
+  fullPaths: '/' | '/dashboard' | '/sign-in' | '/subscriptions'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/subscriptions'
-  id: '__root__' | '/' | '/sign-in' | '/subscriptions'
+  to: '/' | '/dashboard' | '/sign-in' | '/subscriptions'
+  id: '__root__' | '/' | '/dashboard' | '/sign-in' | '/subscriptions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   SignInRoute: typeof SignInRoute
   SubscriptionsRoute: typeof SubscriptionsRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   SignInRoute: SignInRoute,
   SubscriptionsRoute: SubscriptionsRoute,
 }

@@ -1,141 +1,138 @@
 import { Button } from "@/components/ui/button"
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet"
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Link, useRouterState } from "@tanstack/react-router"
-import { CreditCard, Menu, Receipt, X } from "lucide-react"
+import {
+  CreditCard,
+  Receipt,
+} from "lucide-react"
 import { useState } from "react"
 import ClerkHeader from "../integrations/clerk/header-user.tsx"
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouterState()
   const currentPath = router.location.pathname
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   return (
-    <>
-      <header className="fixed top-4 left-4 right-4 z-10 border border-border bg-white/95 backdrop-blur-md rounded-2xl">
-        <nav className="mx-auto max-w-2xl relative flex items-center justify-between p-4">
-          {/* Left - Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setIsMenuOpen(true)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-
-          {/* Center - Page Icon */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
-            <div className="flex items-center justify-center h-9 w-9 rounded-lg text-muted-foreground">
-              {currentPath === "/subscriptions" ? (
-                <CreditCard className="h-6 w-6" />
-              ) : (
-                <Receipt className="h-6 w-6" />
-              )}
-            </div>
-          </div>
-
-          {/* Right - User */}
-          <div className="flex items-center gap-2">
-            <ClerkHeader />
-            {/* <ThemeToggle /> */}
-          </div>
-        </nav>
-      </header>
-
-      {/* Navigation Menu */}
-      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <SheetContent side="left" className="w-80 p-6" showCloseButton={false}>
-          <SheetHeader className="pb-8 border-b border-border p-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/app-icon.png"
-                  alt="Yutori"
-                  className="h-10 w-10 rounded-xl"
-                />
-                <SheetTitle className="text-lg font-medium">Yutori</SheetTitle>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-lg"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-          </SheetHeader>
-          <nav className="space-y-3 mt-8">
-            <Link
-              to="/"
-              className={cn(
-                "flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all",
-                currentPath === "/"
-                  ? "bg-accent text-foreground"
-                  : "hover:bg-accent/50",
-              )}
-              onClick={() => setIsMenuOpen(false)}
+    <header className="fixed top-4 left-4 right-4 z-20">
+      <div className="mx-auto max-w-2xl">
+        <div className="border border-border bg-white/95 backdrop-blur-md rounded-2xl">
+          {/* Top Row - Navigation */}
+          <nav className="relative flex items-center justify-between p-4">
+            {/* Left - Menu Button */}
+            <Popover
+              modal={false}
+              open={isMenuOpen}
+              onOpenChange={setIsMenuOpen}
             >
-              <div
-                className={cn(
-                  "flex items-center justify-center h-9 w-9 rounded-lg transition-colors",
-                  currentPath === "/"
-                    ? "bg-accent/50 text-foreground"
-                    : "text-muted-foreground",
-                )}
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <div className="w-5 h-5 flex flex-col justify-center items-center gap-1.25">
+                    <span
+                      className={cn(
+                        "w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-in-out origin-center",
+                        isMenuOpen && "rotate-45 translate-y-1.75",
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        "w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-in-out",
+                        isMenuOpen && "opacity-0",
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        "w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-in-out origin-center",
+                        isMenuOpen && "-rotate-45 -translate-y-1.75",
+                      )}
+                    />
+                  </div>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-[calc(100vw-2rem)] max-w-2xl p-4 bg-white/95 backdrop-blur-md rounded-2xl border-border shadow-none"
+                align="start"
+                alignOffset={-17}
+                sideOffset={24}
               >
-                <Receipt className="h-5 w-5" />
-              </div>
-              <span
-                className={cn(
-                  currentPath === "/"
-                    ? "text-foreground"
-                    : "text-muted-foreground",
-                )}
-              >
-                取引履歴
-              </span>
-            </Link>
-            <Link
-              to="/subscriptions"
-              className={cn(
-                "flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all",
-                currentPath === "/subscriptions"
-                  ? "bg-accent text-foreground"
-                  : "hover:bg-accent/50",
-              )}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <div
-                className={cn(
-                  "flex items-center justify-center h-9 w-9 rounded-lg transition-colors",
-                  currentPath === "/subscriptions"
-                    ? "bg-accent/50 text-foreground"
-                    : "text-muted-foreground",
-                )}
-              >
-                <CreditCard className="h-5 w-5" />
-              </div>
-              <span
-                className={cn(
-                  currentPath === "/subscriptions"
-                    ? "text-foreground"
-                    : "text-muted-foreground",
-                )}
-              >
-                サブスクリプション
-              </span>
-            </Link>
+                <nav className="space-y-2">
+                  <Link
+                    to="/"
+                    className={cn(
+                      "flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all",
+                      currentPath === "/"
+                        ? "bg-accent text-foreground"
+                        : "hover:bg-accent/50",
+                    )}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <div
+                      className={cn(
+                        "flex items-center justify-center h-9 w-9 rounded-lg transition-colors",
+                        currentPath === "/"
+                          ? "bg-accent/50 text-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      <Receipt className="h-5 w-5" />
+                    </div>
+                    <span
+                      className={cn(
+                        currentPath === "/"
+                          ? "text-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      取引履歴
+                    </span>
+                  </Link>
+                  <Link
+                    to="/subscriptions"
+                    className={cn(
+                      "flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all",
+                      currentPath === "/subscriptions"
+                        ? "bg-accent text-foreground"
+                        : "hover:bg-accent/50",
+                    )}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <div
+                      className={cn(
+                        "flex items-center justify-center h-9 w-9 rounded-lg transition-colors",
+                        currentPath === "/subscriptions"
+                          ? "bg-accent/50 text-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      <CreditCard className="h-5 w-5" />
+                    </div>
+                    <span
+                      className={cn(
+                        currentPath === "/subscriptions"
+                          ? "text-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      サブスクリプション
+                    </span>
+                  </Link>
+                </nav>
+              </PopoverContent>
+            </Popover>
+
+            {/* Right - User */}
+            <div className="flex items-center gap-2">
+              <ClerkHeader />
+              {/* <ThemeToggle /> */}
+            </div>
           </nav>
-        </SheetContent>
-      </Sheet>
-    </>
+        </div>
+      </div>
+    </header>
   )
 }

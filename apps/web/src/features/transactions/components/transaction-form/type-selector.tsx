@@ -30,8 +30,8 @@ export const TypeSelector = ({ selectedType, onSelect }: TypeSelectorProps) => {
             value={option.value}
             className={`w-full h-12 text-base font-medium rounded-lg transition-colors border ${
               option.value === "expense"
-                ? "data-[state=on]:bg-[color:var(--expense-bg)] data-[state=on]:text-[color:var(--expense)] data-[state=on]:border-[color:var(--expense-border)] data-[state=off]:bg-transparent data-[state=off]:text-muted-foreground data-[state=off]:border-border"
-                : "data-[state=on]:bg-[color:var(--income-bg)] data-[state=on]:text-[color:var(--income)] data-[state=on]:border-[color:var(--income-border)] data-[state=off]:bg-transparent data-[state=off]:text-muted-foreground data-[state=off]:border-border"
+                ? "data-[state=on]:bg-red-500/10 data-[state=on]:text-red-600 data-[state=on]:border-red-500/20 data-[state=off]:bg-transparent data-[state=off]:text-muted-foreground data-[state=off]:border-border"
+                : "data-[state=on]:bg-green-500/10 data-[state=on]:text-green-600 data-[state=on]:border-green-500/20 data-[state=off]:bg-transparent data-[state=off]:text-muted-foreground data-[state=off]:border-border"
             }`}
           >
             {option.label}

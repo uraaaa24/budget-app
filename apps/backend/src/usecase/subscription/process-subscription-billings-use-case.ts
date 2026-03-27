@@ -1,7 +1,7 @@
+import { logger } from "@/core/logger"
+import { calculateNextBillingDate } from "@/domain/subscription/calculate-next-billing-date"
 import type { SubscriptionRepository } from "@/domain/subscription/subscription-repository"
 import type { TransactionRepository } from "@/domain/transaction/transaction-repository"
-import { calculateNextBillingDate } from "@/domain/subscription/calculate-next-billing-date"
-import { logger } from "@/core/logger"
 
 export class ProcessSubscriptionBillingsUseCase {
   constructor(
@@ -11,9 +11,8 @@ export class ProcessSubscriptionBillingsUseCase {
 
   async execute(date: Date = new Date()): Promise<void> {
     // Find all subscriptions due for billing
-    const dueSubscriptions = await this.subscriptionRepository.findDueForBilling(
-      date,
-    )
+    const dueSubscriptions =
+      await this.subscriptionRepository.findDueForBilling(date)
 
     logger.info("processing_subscription_billings", {
       date: date.toISOString(),
@@ -27,8 +26,8 @@ export class ProcessSubscriptionBillingsUseCase {
         await this.transactionRepository.create(subscription.userId, {
           type: "expense",
           amount: subscription.amount,
-          category: subscription.name, // Use subscription name as category
-          memo: `サブスクリプション: ${subscription.name}`,
+          category: "Subscription",
+          memo: subscription.name,
           spentAt: subscription.nextBillingDate, // Use the billing date
         })
 

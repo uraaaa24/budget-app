@@ -9,6 +9,7 @@ import Footer from "../components/Footer"
 import Header from "../components/Header"
 
 import ClerkProvider from "../integrations/clerk/provider"
+import { MonthProvider } from "../contexts/month-context"
 
 import TanStackQueryProvider from "../integrations/tanstack-query/root-provider"
 
@@ -55,12 +56,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
+      <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-primary/25">
         <ClerkProvider>
           <TanStackQueryProvider>
-            <Header />
-            {children}
-            {/*<Footer />*/}
+            <MonthProvider>
+              <Header />
+              {children}
+              {/*<Footer />*/}
             {import.meta.env.DEV && (
               <TanStackDevtools
                 config={{
@@ -75,6 +77,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
                 ]}
               />
             )}
+            </MonthProvider>
           </TanStackQueryProvider>
         </ClerkProvider>
         <Scripts />
