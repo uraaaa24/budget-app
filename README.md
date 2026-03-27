@@ -1,6 +1,52 @@
-# Turborepo starter
+# Budget App
 
-This Turborepo starter is maintained by the Turborepo core team.
+Personal budget management application built with monorepo architecture.
+
+## Production Applications
+
+This repository manages the following production applications:
+
+- **web**: Frontend UI (Vite + TanStack Start)
+- **backend**: REST API server (Hono + Node.js)
+- **db**: PostgreSQL database (managed by Supabase)
+
+**Note**: `apps/mobile` exists in the repository but is not part of the production deployment flow. It is a deprecated application and excluded from production operations.
+
+## Architecture
+
+### Apps
+
+- **apps/web**: Frontend application
+  - Framework: Vite + TanStack Start (SSR-enabled)
+  - Auth: Clerk React
+  - Styling: Tailwind CSS
+  - State: TanStack Query + Router
+  - Port: 3000 (local)
+
+- **apps/backend**: API server
+  - Framework: Hono
+  - Runtime: Node.js
+  - Auth: Clerk (JWT verification)
+  - ORM: Drizzle
+  - Database: PostgreSQL (Supabase)
+  - Port: 3001 (local)
+
+- **apps/mobile**: Mobile app (deprecated, not deployed)
+  - Expo + React Native
+
+### Packages
+
+- `@repo/ui`: Shared UI components
+- `@repo/validation`: Shared validation schemas
+- `@repo/eslint-config`: ESLint configurations
+- `@repo/typescript-config`: TypeScript configurations
+
+### Database
+
+- **Provider**: Supabase (PostgreSQL)
+- **Migrations**: `supabase/migrations/` (source of truth)
+- **Local Setup**: Supabase CLI + Docker (via Colima)
+- **ORM**: Drizzle (schema definition and queries)
 
 ## Commit Convention
 
@@ -20,152 +66,124 @@ pnpm run setup:git-hooks
 
 Examples:
 
-- `feat(mobile): add transaction summary card`
+- `feat(web): add transaction summary card`
 - `fix(backend): handle missing budget id`
 - `chore: update workspace scripts`
 
 Allowed `type` values:
 
-- `feat`
-- `fix`
-- `docs`
-- `style`
-- `refactor`
-- `perf`
-- `test`
-- `build`
-- `ci`
-- `chore`
-- `revert`
+- `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 
-## Using this example
+## Local Development
 
-Run the following command:
+### Prerequisites
+
+- Node.js >= 18
+- pnpm 9.0.0
+- Docker (for Supabase local development)
+
+### Initial Setup
 
 ```sh
-npx create-turbo@latest
+# Install dependencies
+pnpm install
+
+# Setup git hooks
+pnpm run setup:git-hooks
+
+# Start local database
+pnpm run db:start
+
+# Run migrations and seed data
+pnpm run db:setup
 ```
 
-## What's inside?
+### Environment Variables
 
-This Turborepo includes the following packages/apps:
+Copy `.env.example` files and configure:
 
-### Apps and Packages
+```sh
+# Backend
+cp apps/backend/.env.example apps/backend/.env
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+# Web
+cp apps/web/.env.example apps/web/.env.local
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+See each app's `.env.example` for required values.
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### Development
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+```sh
+# Start web and backend together
+pnpm run dev
 
-### Develop
+# Or start individually
+pnpm run dev:web
+pnpm run dev:backend
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+# Mobile (deprecated, local development only)
+pnpm run dev:mobile
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+### Database Operations
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+```sh
+# Start database
+pnpm run db:start
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+# Stop database
+pnpm run db:stop
 
-### Remote Caching
+# Check status
+pnpm run db:status
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+# Reset database (run all migrations + seed)
+pnpm run db:reset
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+# Create new migration
+pnpm run db:migration:new <migration_name>
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+See `docs/operations.md` for detailed database workflow.
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## Build and Validation
 
+```sh
+# Build all production apps (web + backend)
+pnpm run build
+
+# Lint all apps
+pnpm run lint
+
+# Type checking
+pnpm run check-types
+
+# Pre-deployment validation
+pnpm run deploy:check
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
+## Deployment
 
-## Useful Links
+See `docs/deploy.md` for detailed deployment instructions.
 
-Learn more about the power of Turborepo:
+**Quick overview**:
+- **web**: Deployed to Vercel
+- **backend**: Deployed to Render
+- **db**: Managed by Supabase
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+## Documentation
+
+- `docs/deploy.md`: Deployment setup and procedures
+- `docs/operations.md`: Day-to-day operations and troubleshooting
+- `apps/docs/`: Technical specifications
+
+## Monorepo Tools
+
+This project uses:
+
+- [pnpm workspace](https://pnpm.io/workspaces) for package management
+- [Turborepo](https://turborepo.dev/) for build orchestration
+- [TypeScript](https://www.typescriptlang.org/) for type safety
+- [ESLint](https://eslint.org/) for linting
+- [Prettier](https://prettier.io) for formatting
