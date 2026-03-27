@@ -25,11 +25,11 @@ This repository manages the following production applications:
 
 - **apps/backend**: API server
   - Framework: Hono
-  - Runtime: Node.js
+  - Runtime: Cloudflare Workers
   - Auth: Clerk (JWT verification)
   - ORM: Drizzle
-  - Database: PostgreSQL (Supabase)
-  - Port: 3001 (local)
+  - Database: PostgreSQL (Supabase Connection Pooler)
+  - Port: 8787 (local via wrangler dev)
 
 - **apps/mobile**: Mobile app (deprecated, not deployed)
   - Expo + React Native
@@ -103,24 +103,26 @@ pnpm run db:setup
 Copy `.env.example` files and configure:
 
 ```sh
-# Backend
-cp apps/backend/.env.example apps/backend/.env
+# Backend (Cloudflare Workers)
+cp apps/backend/.dev.vars.example apps/backend/.dev.vars
 
 # Web
 cp apps/web/.env.example apps/web/.env.local
 ```
 
-See each app's `.env.example` for required values.
+See each app's `.env.example` (or `.dev.vars.example`) for required values.
 
 ### Development
 
 ```sh
 # Start web and backend together
 pnpm run dev
+# Web: http://localhost:3000
+# Backend: http://localhost:8787
 
 # Or start individually
-pnpm run dev:web
-pnpm run dev:backend
+pnpm run dev:web      # Port 3000
+pnpm run dev:backend  # Port 8787
 
 # Mobile (deprecated, local development only)
 pnpm run dev:mobile
@@ -168,8 +170,8 @@ pnpm run deploy:check
 See `docs/deploy.md` for detailed deployment instructions.
 
 **Quick overview**:
-- **web**: Deployed to Vercel
-- **backend**: Deployed to Render
+- **web**: Deployed to Vercel (automatic on git push)
+- **backend**: Deployed to Cloudflare Workers (`pnpm run deploy:backend`)
 - **db**: Managed by Supabase
 
 ## Documentation
