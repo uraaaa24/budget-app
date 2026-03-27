@@ -1,0 +1,12 @@
+name = "budget-app-backend"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Environment variables for production
+# Set these in Cloudflare Dashboard or via wrangler secret
+# DATABASE_URL, CLERK_SECRET_KEY, API_URL
+
+[observability]
+enabled = true
+
+# Local development uses .dev.vars file for environment variables

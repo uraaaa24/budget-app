@@ -1,4 +1,4 @@
-import "dotenv/config"
+import type { Env } from "@/types/env"
 import * as v from "valibot"
 
 const EnvSchema = v.object({
@@ -8,11 +8,14 @@ const EnvSchema = v.object({
 })
 type AppEnv = v.InferOutput<typeof EnvSchema>
 
-const createEnv = (): AppEnv => {
+/**
+ * Validates environment variables from Cloudflare Workers env binding
+ */
+export const validateEnv = (env: Env): AppEnv => {
   const envVars = {
-    API_URL: process.env.API_URL,
-    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-    DATABASE_URL: process.env.DATABASE_URL,
+    API_URL: env.API_URL,
+    CLERK_SECRET_KEY: env.CLERK_SECRET_KEY,
+    DATABASE_URL: env.DATABASE_URL,
   }
 
   const parsedEnv = v.safeParse(EnvSchema, envVars)
@@ -33,5 +36,3 @@ const createEnv = (): AppEnv => {
 
   return parsedEnv.output
 }
-
-export const env = createEnv()

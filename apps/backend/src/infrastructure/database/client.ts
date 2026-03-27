@@ -1,15 +1,20 @@
-import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js"
-import postgres from "postgres"
+import { drizzle, type NeonHttpDatabase } from "drizzle-orm/neon-http"
+import { neon } from "@neondatabase/serverless"
 import * as schema from "@/infrastructure/database/schema"
 
-let client: PostgresJsDatabase<typeof schema> | null = null
+let client: NeonHttpDatabase<typeof schema> | null = null
 
+/**
+ * Get database client for Cloudflare Workers
+ * Uses HTTP-based connection via @neondatabase/serverless
+ * Compatible with Supabase and other PostgreSQL providers
+ */
 export const getDbClient = (connectionString: string) => {
   if (!client) {
-    const queryClient = postgres(connectionString)
-    client = drizzle(queryClient, { schema })
+    const sql = neon(connectionString)
+    client = drizzle(sql, { schema })
   }
   return client
 }
 
-export type DbClient = PostgresJsDatabase<typeof schema>
+export type DbClient = NeonHttpDatabase<typeof schema>

@@ -1,12 +1,14 @@
+import { validateEnv } from "@/core/env"
 import { logger } from "@/core/logger"
 import { createCategoryRepository } from "@/infrastructure/category/create-category-repository"
 import { createTransactionRepository } from "@/infrastructure/transaction/create-transaction-repository"
 import { createSubscriptionRepository } from "@/infrastructure/subscription/create-subscription-repository"
-import { requireUserId } from "@/presentation/http/auth/require-user-id"
+import { createRequireUserId } from "@/presentation/http/auth/require-user-id"
 import { registerCategoryRoutes } from "@/presentation/http/category/register-category-routes"
 import { registerSystemRoutes } from "@/presentation/http/system/register-system-routes"
 import { registerTransactionRoutes } from "@/presentation/http/transaction/register-transaction-routes"
 import { registerSubscriptionRoutes } from "@/presentation/http/subscription/register-subscription-routes"
+import type { Env } from "@/types/env"
 import { CreateCategoryUseCase } from "@/usecase/category/create-category-use-case"
 import { ListCategoriesUseCase } from "@/usecase/category/list-categories-use-case"
 import { CreateTransactionUseCase } from "@/usecase/transaction/create-transaction-use-case"
@@ -21,7 +23,10 @@ import { ProcessSubscriptionBillingsUseCase } from "@/usecase/subscription/proce
 import { Hono } from "hono"
 import { cors } from "hono/cors"
 
-export const createApp = () => {
+export const createApp = (cloudflareEnv: Env) => {
+  // Validate environment variables
+  const env = validateEnv(cloudflareEnv)
+
   const app = new Hono()
   app.use("*", cors())
   app.onError((error, c) => {
@@ -36,9 +41,10 @@ export const createApp = () => {
     return c.json({ error: "Internal Server Error" }, 500)
   })
 
-  const transactionRepository = createTransactionRepository()
-  const categoryRepository = createCategoryRepository()
-  const subscriptionRepository = createSubscriptionRepository()
+  const transactionRepository = createTransactionRepository(env.DATABASE_URL)
+  const categoryRepository = createCategoryRepository(env.DATABASE_URL)
+  const subscriptionRepository = createSubscriptionRepository(env.DATABASE_URL)
+  const requireUserId = createRequireUserId(env.CLERK_SECRET_KEY)
 
   const createTransactionUseCase = new CreateTransactionUseCase(
     transactionRepository,

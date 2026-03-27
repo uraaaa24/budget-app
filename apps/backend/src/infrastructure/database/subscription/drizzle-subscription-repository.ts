@@ -10,10 +10,10 @@ import type {
 } from "@/domain/subscription/subscription"
 import { subscriptions } from "@/infrastructure/database/schema"
 import { and, desc, eq } from "drizzle-orm"
-import type { DrizzleClient } from "@/infrastructure/database/client"
+import type { DbClient } from "@/infrastructure/database/client"
 
 export class DrizzleSubscriptionRepository implements SubscriptionRepository {
-  constructor(private readonly db: DrizzleClient) {}
+  constructor(private readonly db: DbClient) {}
 
   async create(
     userId: string,
@@ -35,6 +35,10 @@ export class DrizzleSubscriptionRepository implements SubscriptionRepository {
         categoryId: input.categoryId,
       })
       .returning()
+
+    if (!row) {
+      throw new Error("Failed to create subscription")
+    }
 
     return this.rowToEntity(row)
   }
