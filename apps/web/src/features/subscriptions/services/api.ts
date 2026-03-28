@@ -4,95 +4,53 @@ import type {
   SubscriptionListResponse,
   UpdateSubscriptionInput,
 } from "@/features/subscriptions/model/types"
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
+import { fetchWithAuth, type AuthToken } from "@/lib/api"
 
 export const createSubscription = async (
   input: CreateSubscriptionInput,
-  token: string,
+  token: AuthToken,
 ): Promise<Subscription> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions`, {
+  return fetchWithAuth<Subscription>("/subscriptions", token, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(input),
   })
-
-  if (!response.ok) {
-    throw new Error("Failed to create subscription")
-  }
-
-  return response.json()
 }
 
 export const fetchSubscriptions = async (
-  token: string,
+  token: AuthToken,
 ): Promise<SubscriptionListResponse> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch subscriptions")
-  }
-
-  return response.json()
+  return fetchWithAuth<SubscriptionListResponse>("/subscriptions", token)
 }
 
 export const fetchSubscription = async (
   id: string,
-  token: string,
+  token: AuthToken,
 ): Promise<Subscription> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch subscription")
-  }
-
-  return response.json()
+  return fetchWithAuth<Subscription>(`/subscriptions/${id}`, token)
 }
 
 export const updateSubscription = async (
   input: UpdateSubscriptionInput,
-  token: string,
+  token: AuthToken,
 ): Promise<Subscription> => {
   const { id, ...body } = input
-  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
+  return fetchWithAuth<Subscription>(`/subscriptions/${id}`, token, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(body),
   })
-
-  if (!response.ok) {
-    throw new Error("Failed to update subscription")
-  }
-
-  return response.json()
 }
 
 export const deleteSubscription = async (
   id: string,
-  token: string,
+  token: AuthToken,
 ): Promise<void> => {
-  const response = await fetch(`${API_BASE_URL}/subscriptions/${id}`, {
+  await fetchWithAuth<void>(`/subscriptions/${id}`, token, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   })
-
-  if (!response.ok) {
-    throw new Error("Failed to delete subscription")
-  }
 }

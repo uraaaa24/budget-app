@@ -4,47 +4,7 @@ import type {
   Transaction,
   UpdateTransactionInput,
 } from "@/features/transactions/model/types"
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8787"
-
-type AuthToken = string
-
-class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public detail?: string,
-  ) {
-    super(message)
-    this.name = "ApiError"
-  }
-}
-
-async function fetchWithAuth<T>(
-  path: string,
-  token: AuthToken,
-  options?: RequestInit,
-): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      ...options?.headers,
-      Authorization: `Bearer ${token}`,
-    },
-  })
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => "")
-    throw new ApiError(
-      `API request failed: ${response.status}`,
-      response.status,
-      detail,
-    )
-  }
-
-  return response.json() as Promise<T>
-}
+import { fetchWithAuth, type AuthToken } from "@/lib/api"
 
 export const fetchTransactions = async (token: AuthToken) => {
   const data = await fetchWithAuth<{ items: Transaction[] }>(
