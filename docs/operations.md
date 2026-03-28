@@ -132,22 +132,24 @@ git commit -m "feat(web): ..."
 git push origin main
 ```
 
-Vercel automatically deploys.
+Vercel automatically deploys on push to `main`.
 
 ### Backend-Only Changes
 
 ```sh
 # Make changes to apps/backend
-cd apps/backend
-
-# Test locally
-pnpm run dev
-
-# Deploy to production
-pnpm run deploy
+git add .
+git commit -m "feat(backend): ..."
+git push origin main
 ```
 
-**Note**: Backend deployment is manual.
+GitHub Actions automatically deploys to Cloudflare Workers.
+
+**Manual deployment** (if needed):
+```sh
+cd apps/backend
+pnpm run deploy
+```
 
 ### Database Schema Changes
 

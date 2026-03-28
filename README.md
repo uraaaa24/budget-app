@@ -170,9 +170,14 @@ pnpm run deploy:check
 See `docs/deploy.md` for detailed deployment instructions.
 
 **Quick overview**:
-- **web**: Deployed to Vercel (automatic on git push)
-- **backend**: Deployed to Cloudflare Workers (`pnpm run deploy:backend`)
-- **db**: Managed by Supabase
+- **web**: Vercel (auto-deploys on push to `main`)
+- **backend**: Cloudflare Workers (auto-deploys on push to `main` via GitHub Actions)
+- **db**: Supabase (manual migration: `supabase db push`)
+
+**CI/CD**:
+- GitHub Actions runs quality checks (lint, typecheck, build) on all PRs
+- Backend auto-deploys to Cloudflare Workers when changes pushed to `main`
+- Frontend auto-deploys to Vercel when changes pushed to `main`
 
 ## Documentation
 

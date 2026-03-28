@@ -32,9 +32,9 @@ This document describes how to deploy the Budget App to production.
 
 Before deploying, ensure you have:
 
-- [ ] GitHub account (for code hosting and deployments)
+- [ ] GitHub account (for code hosting and CI/CD)
+- [ ] Cloudflare account (sign up at https://dash.cloudflare.com/sign-up)
 - [ ] Vercel account (sign up at https://vercel.com)
-- [ ] Render account (sign up at https://render.com)
 - [ ] Supabase account (sign up at https://supabase.com)
 - [ ] Clerk account (for authentication, sign up at https://clerk.com)
 - [ ] Local development environment working (see root README.md)
@@ -440,3 +440,76 @@ wrangler tail
 - Enable HTTPS (automatic on Vercel and Render)
 - Set up staging environment
 - Add CI/CD for automated testing
+
+## Automatic Deployment (GitHub Actions)
+
+### Setup Automatic Backend Deployment
+
+The repository includes GitHub Actions workflow for automatic backend deployment.
+
+#### Get Cloudflare API Token
+
+1. Go to Cloudflare Dashboard → My Profile → API Tokens
+2. Click "Create Token"
+3. Use "Edit Cloudflare Workers" template
+4. Click "Continue to summary" → "Create Token"
+5. Copy the token (you won't see it again)
+
+#### Add GitHub Secret
+
+1. Go to your GitHub repository
+2. Settings → Secrets and variables → Actions
+3. Click "New repository secret"
+4. Name: `CLOUDFLARE_API_TOKEN`
+5. Value: Paste the token from above
+6. Click "Add secret"
+
+#### Set Cloudflare Workers Secrets
+
+Even with automatic deployment, you still need to set Worker secrets once:
+
+```sh
+cd apps/backend
+
+wrangler secret put DATABASE_URL
+wrangler secret put CLERK_SECRET_KEY
+wrangler secret put API_URL
+```
+
+#### How It Works
+
+After setup, backend automatically deploys when:
+- You push to `main` branch
+- AND changes are in `apps/backend/**` or `packages/**`
+
+**Deployment flow**:
+1. Runs type check
+2. Runs lint
+3. Runs build
+4. Deploys to Cloudflare Workers
+
+**Monitoring**:
+- GitHub → Actions tab → See deployment status
+- Deployments typically complete in 2-3 minutes
+
+#### Manual Deployment (Optional)
+
+You can still deploy manually:
+
+```sh
+cd apps/backend
+pnpm run deploy
+```
+
+### CI Quality Checks
+
+The repository also runs quality checks on every pull request and push:
+
+- Type checking (web + backend)
+- Linting (web + backend)
+- Build verification (web + backend)
+
+These checks must pass before merging PRs.
+
+**Note**: CI excludes `mobile` from checks as it's deprecated.
+
