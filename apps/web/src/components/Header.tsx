@@ -128,7 +128,6 @@ export default function Header() {
             {/* Right - User */}
             <div className="flex items-center gap-2">
               <ClerkHeader />
-              {/* <ThemeToggle /> */}
             </div>
           </nav>
         </div>
