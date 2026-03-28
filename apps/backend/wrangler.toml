@@ -1,6 +1,7 @@
 name = "budget-app-backend"
 main = "dist/index.js"
 compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
 
 # Environment variables for production
 # Set these in Cloudflare Dashboard or via wrangler secret
