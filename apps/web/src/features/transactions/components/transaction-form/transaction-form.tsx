@@ -26,7 +26,7 @@ type TransactionFormProps = {
   isSubmitting: boolean
   onSubmit: (input: CreateTransactionInput) => Promise<void>
   onSuccess?: () => void
-  initialValues?: TransactionFormValues & { id?: string; spentAt?: string }
+  initialValues?: TransactionFormValues & { id?: string }
 }
 
 export const TransactionForm = ({
@@ -38,20 +38,13 @@ export const TransactionForm = ({
 }: TransactionFormProps) => {
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionFormSchema),
-    defaultValues: initialValues
-      ? {
-          ...initialValues,
-          spentAt: initialValues.spentAt
-            ? new Date(initialValues.spentAt)
-            : new Date(),
-        }
-      : {
-          type: "expense",
-          amount: "",
-          category: "",
-          memo: "",
-          spentAt: new Date(),
-        },
+    defaultValues: initialValues ?? {
+      type: "expense",
+      amount: "",
+      category: "",
+      memo: "",
+      spentAt: new Date(),
+    },
   })
 
   const selectedType = form.watch("type")
@@ -107,10 +100,7 @@ export const TransactionForm = ({
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleSubmit)}
-        className="space-y-8"
-      >
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         {/* Type Selector */}
         <FormField
           control={form.control}
@@ -157,9 +147,6 @@ export const TransactionForm = ({
           )}
         />
 
-        {/* Divider */}
-        <div className="border-t border-border" />
-
         {/* Details Section */}
         <div className="space-y-6">
           <FormField
@@ -199,7 +186,7 @@ export const TransactionForm = ({
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="例えば、ランチ"
+                    placeholder="例えば、ランチとか"
                     className="h-12 text-base"
                   />
                 </FormControl>

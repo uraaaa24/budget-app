@@ -2,6 +2,9 @@ import { useMonth } from "@/contexts/month-context"
 import { cn } from "@/lib/utils"
 import { ArrowLeft } from "lucide-react"
 
+/**
+ * MonthSelect component allows users to navigate between months and displays the currently selected month and year. It uses the useMonth hook to manage month navigation and state.
+ */
 const MonthSelect = () => {
   const {
     selectedYear,
