@@ -10,6 +10,7 @@
     "dev:backend": "pnpm --filter backend run dev",
     "dev:mobile": "pnpm --filter mobile dev",
     "deploy:backend": "pnpm --filter backend run deploy",
+    "deploy:backend:ci": "gh workflow run deploy-backend.yml --ref main",
     "deploy:check": "pnpm run lint && pnpm run check-types && pnpm run build",
     "lint": "turbo run lint --filter=web --filter=backend",
     "check-types": "turbo run check-types --filter=web --filter=backend",
