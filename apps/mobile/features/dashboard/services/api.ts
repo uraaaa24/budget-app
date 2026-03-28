@@ -99,3 +99,21 @@ export const updateTransaction = async (
 
   return (await response.json()) as Transaction
 }
+
+export const deleteTransaction = async (id: string, token: AuthToken) => {
+  const response = await fetch(`${API_BASE_URL}${API_PATHS.transactions}/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '')
+    throw new Error(
+      detail
+        ? `Failed to delete transaction: ${response.status} ${detail}`
+        : `Failed to delete transaction: ${response.status}`,
+    )
+  }
+}

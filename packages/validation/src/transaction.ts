@@ -46,3 +46,8 @@ export const updateTransactionParamsSchema = v.object({
   id: v.pipe(v.string(), v.minLength(1)),
 })
 export type UpdateTransactionParams = v.InferOutput<typeof updateTransactionParamsSchema>
+
+export const deleteTransactionParamsSchema = v.object({
+  id: v.pipe(v.string(), v.minLength(1)),
+})
+export type DeleteTransactionParams = v.InferOutput<typeof deleteTransactionParamsSchema>

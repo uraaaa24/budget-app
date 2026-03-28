@@ -14,12 +14,10 @@ import { useCreateTransaction } from "@/features/transactions/hooks/use-create-t
 import { useTransactionQuery } from "@/features/transactions/hooks/use-transaction-query"
 import { useUpdateTransaction } from "@/features/transactions/hooks/use-update-transaction"
 import type { Transaction } from "@/features/transactions/model/types"
-import { useAuth } from "@clerk/clerk-react"
 import { Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 
 export const TransactionsPage = () => {
-  const { userId } = useAuth()
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] =
     useState<Transaction | null>(null)

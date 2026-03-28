@@ -77,6 +77,17 @@ export class DrizzleTransactionRepository implements TransactionRepository {
 
     return toDomainTransaction(row)
   }
+
+  async delete(userId: string, transactionId: string): Promise<void> {
+    await this.db
+      .delete(transactions)
+      .where(
+        and(
+          eq(transactions.id, transactionId),
+          eq(transactions.userId, userId),
+        ),
+      )
+  }
 }
 
 const toDomainTransaction = (row: TransactionRow): Transaction => ({

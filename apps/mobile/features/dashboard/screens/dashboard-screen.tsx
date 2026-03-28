@@ -3,14 +3,11 @@ import { TransactionList } from "@/features/dashboard/components/transaction-lis
 import { useCategoryQuery } from "@/features/dashboard/hooks/use-category-query"
 import { useTransactionQuery } from "@/features/dashboard/hooks/use-transaction-query"
 import type { Transaction } from "@/features/dashboard/model/types"
-import { useAuth, useClerk } from "@clerk/clerk-expo"
 import { useRouter } from "expo-router"
 import { useCallback } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
 
 export const DashboardScreen = () => {
-  const { userId } = useAuth()
-  const { signOut } = useClerk()
   const router = useRouter()
 
   const { categories, queryError: categoryQueryError } = useCategoryQuery()

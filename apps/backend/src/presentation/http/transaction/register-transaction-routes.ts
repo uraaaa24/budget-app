@@ -1,10 +1,12 @@
 import type { GetUserId } from "@/presentation/http/auth/get-user-id"
 import type { CreateTransactionUseCase } from "@/usecase/transaction/create-transaction-use-case"
+import type { DeleteTransactionUseCase } from "@/usecase/transaction/delete-transaction-use-case"
 import type { ListTransactionsUseCase } from "@/usecase/transaction/list-transactions-use-case"
 import type { UpdateTransactionUseCase } from "@/usecase/transaction/update-transaction-use-case"
 import { API_PATHS } from "@repo/validation/api-paths"
 import {
   createTransactionBodySchema,
+  deleteTransactionParamsSchema,
   transactionListResponseSchema,
   transactionSchema,
   updateTransactionBodySchema,
@@ -18,6 +20,7 @@ export const registerTransactionRoutes = (
   createTransactionUseCase: CreateTransactionUseCase,
   listTransactionsUseCase: ListTransactionsUseCase,
   updateTransactionUseCase: UpdateTransactionUseCase,
+  deleteTransactionUseCase: DeleteTransactionUseCase,
   getUserId: GetUserId,
 ) => {
   app.post(
@@ -111,6 +114,30 @@ export const registerTransactionRoutes = (
         payload,
       )
       return c.json(transaction, 200)
+    },
+  )
+
+  app.delete(
+    `${API_PATHS.transactions}/:id`,
+    describeRoute({
+      summary: "Delete transaction",
+      tags: ["transactions"],
+      responses: {
+        204: {
+          description: "Transaction deleted",
+        },
+      },
+    }),
+    validator("param", deleteTransactionParamsSchema),
+    async (c) => {
+      const userId = await getUserId(c)
+      if (userId instanceof Response) {
+        return userId
+      }
+
+      const { id } = c.req.valid("param")
+      await deleteTransactionUseCase.execute(userId, id)
+      return c.body(null, 204)
     },
   )
 }

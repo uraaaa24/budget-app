@@ -14,4 +14,5 @@ export type TransactionRepository = {
   create(userId: string, input: CreateTransactionInput): Promise<Transaction>
   listByUser(userId: string): Promise<Transaction[]>
   update(userId: string, transactionId: string, input: UpdateTransactionInput): Promise<Transaction>
+  delete(userId: string, transactionId: string): Promise<void>
 }

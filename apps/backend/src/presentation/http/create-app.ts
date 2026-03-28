@@ -12,6 +12,7 @@ import type { Env } from "@/types/env"
 import { CreateCategoryUseCase } from "@/usecase/category/create-category-use-case"
 import { ListCategoriesUseCase } from "@/usecase/category/list-categories-use-case"
 import { CreateTransactionUseCase } from "@/usecase/transaction/create-transaction-use-case"
+import { DeleteTransactionUseCase } from "@/usecase/transaction/delete-transaction-use-case"
 import { ListTransactionsUseCase } from "@/usecase/transaction/list-transactions-use-case"
 import { UpdateTransactionUseCase } from "@/usecase/transaction/update-transaction-use-case"
 import { CreateSubscriptionUseCase } from "@/usecase/subscription/create-subscription-use-case"
@@ -55,6 +56,9 @@ export const createApp = (cloudflareEnv: Env) => {
   const updateTransactionUseCase = new UpdateTransactionUseCase(
     transactionRepository,
   )
+  const deleteTransactionUseCase = new DeleteTransactionUseCase(
+    transactionRepository,
+  )
   const createCategoryUseCase = new CreateCategoryUseCase(categoryRepository)
   const listCategoriesUseCase = new ListCategoriesUseCase(categoryRepository)
 
@@ -86,6 +90,7 @@ export const createApp = (cloudflareEnv: Env) => {
     createTransactionUseCase,
     listTransactionsUseCase,
     updateTransactionUseCase,
+    deleteTransactionUseCase,
     requireUserId,
   )
   registerCategoryRoutes(
