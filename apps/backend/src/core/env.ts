@@ -2,7 +2,6 @@ import type { Env } from "@/types/env"
 import * as v from "valibot"
 
 const EnvSchema = v.object({
-  API_URL: v.pipe(v.string(), v.url()),
   CLERK_SECRET_KEY: v.pipe(v.string(), v.minLength(1)),
   DATABASE_URL: v.pipe(v.string(), v.minLength(1)),
 })
@@ -13,7 +12,6 @@ type AppEnv = v.InferOutput<typeof EnvSchema>
  */
 export const validateEnv = (env: Env): AppEnv => {
   const envVars = {
-    API_URL: env.API_URL,
     CLERK_SECRET_KEY: env.CLERK_SECRET_KEY,
     DATABASE_URL: env.DATABASE_URL,
   }
