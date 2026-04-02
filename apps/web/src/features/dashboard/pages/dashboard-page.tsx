@@ -1,14 +1,76 @@
+import { Skeleton } from "@/components/ui/skeleton"
 import { useDashboardData } from "@/features/dashboard/hooks/use-dashboard-data"
 import { Link } from "@tanstack/react-router"
 
 export const DashboardPage = () => {
-  const {
-    monthlyData,
-    subscriptionSummary,
-    isLoading,
-  } = useDashboardData()
+  const { monthlyData, subscriptionSummary, isLoading } = useDashboardData()
 
   const hasData = monthlyData.topCategories.length > 0
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
+          {/* Key Insights Skeleton */}
+          <section className="grid grid-cols-2 gap-4">
+            <div className="bg-accent/30 rounded-2xl p-5 space-y-2">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+            <div className="bg-accent/30 rounded-2xl p-5 space-y-2">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </section>
+
+          {/* Subscription Summary Skeleton */}
+          <section className="bg-accent/50 rounded-2xl p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-4 w-16" />
+            </div>
+            <div className="flex gap-6">
+              <div className="flex-1 space-y-1">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-6 w-20" />
+              </div>
+              <div className="flex-1 space-y-1">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-6 w-16" />
+              </div>
+            </div>
+          </section>
+
+          {/* Category Breakdown Skeleton */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-5 w-28" />
+              <Skeleton className="h-4 w-24" />
+            </div>
+            <div className="bg-accent/30 rounded-2xl p-5 space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-5 w-5 rounded" />
+                      <Skeleton className="h-5 w-20" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-4 w-12" />
+                      <Skeleton className="h-5 w-20" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-2 w-full rounded-full" />
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen">

@@ -4,6 +4,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
+import { Skeleton } from "@/components/ui/skeleton"
 import { SubscriptionForm } from "@/features/subscriptions/components/subscription-form"
 import { SubscriptionList } from "@/features/subscriptions/components/subscription-list"
 import { useCreateSubscription } from "@/features/subscriptions/hooks/use-create-subscription"
@@ -13,17 +14,16 @@ import type {
   CreateSubscriptionInput,
   Subscription,
 } from "@/features/subscriptions/model/types"
-import { useAuth } from "@clerk/clerk-react"
 import { useState } from "react"
 
 export const SubscriptionsPage = () => {
-  const { userId } = useAuth()
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [editingSubscription, setEditingSubscription] =
     useState<Subscription | null>(null)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
-  const { subscriptions, summary, queryError } = useSubscriptionQuery()
+  const { subscriptions, summary, queryError, isLoading } =
+    useSubscriptionQuery()
   const { isSubmitting: isCreating, submitSubscription: createSubscription } =
     useCreateSubscription()
   const { isSubmitting: isUpdating, submitSubscription: updateSubscription } =
@@ -55,6 +55,54 @@ export const SubscriptionsPage = () => {
     setEditingSubscription(null)
     setShowSuccessMessage(true)
     setTimeout(() => setShowSuccessMessage(false), 2000)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
+          {/* Summary Section Skeleton */}
+          <section className="space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-10 w-40" />
+              </div>
+
+              <div className="flex gap-6">
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-7 w-28" />
+                </div>
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-7 w-20" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Subscription List Skeleton */}
+          <section className="space-y-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-accent/30 rounded-xl p-4 space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1.5 flex-1">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <Skeleton className="h-7 w-20" />
+                </div>
+                <div className="flex items-center gap-3 pt-1">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+              </div>
+            ))}
+          </section>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -161,7 +209,8 @@ export const SubscriptionsPage = () => {
                               : undefined,
                           status: editingSubscription.status,
                           memo: editingSubscription.memo ?? "",
-                          paymentMethod: editingSubscription.paymentMethod ?? "",
+                          paymentMethod:
+                            editingSubscription.paymentMethod ?? "",
                         }
                       })()
                     : undefined
