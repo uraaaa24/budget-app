@@ -1,4 +1,5 @@
 export * from "@/infrastructure/database/schema/constants"
+export * from "@/infrastructure/database/schema/users"
 export * from "@/infrastructure/database/schema/categories"
 export * from "@/infrastructure/database/schema/transactions"
 export * from "@/infrastructure/database/schema/subscriptions"

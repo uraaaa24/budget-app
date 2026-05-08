@@ -1,5 +1,6 @@
 import { logger } from "@/core/logger"
 import type { GetUserId } from "@/presentation/http/auth/get-user-id"
+import type { EnsureUserExistsUseCase } from "@/usecase/user/ensure-user-exists-use-case"
 import { verifyToken } from "@clerk/backend"
 import type { Context } from "hono"
 
@@ -21,7 +22,10 @@ const logUnauthorized = (
   })
 }
 
-export const createRequireUserId = (clerkSecretKey: string): GetUserId => {
+export const createRequireUserId = (
+  clerkSecretKey: string,
+  ensureUserExistsUseCase: EnsureUserExistsUseCase,
+): GetUserId => {
   return async (c: Context): Promise<string | Response> => {
     const authHeader = c.req.header("authorization")
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -47,6 +51,13 @@ export const createRequireUserId = (clerkSecretKey: string): GetUserId => {
         logUnauthorized(c, "token_without_sub")
         return c.json({ error: "Unauthorized" }, 401)
       }
+
+      // Ensure user exists in database, create if not
+      await ensureUserExistsUseCase.execute({
+        userId,
+        email: payload.email as string | undefined,
+        name: payload.name as string | undefined,
+      })
 
       return userId
     } catch (error) {

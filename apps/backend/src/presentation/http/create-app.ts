@@ -3,6 +3,7 @@ import { logger } from "@/core/logger"
 import { createCategoryRepository } from "@/infrastructure/category/create-category-repository"
 import { createTransactionRepository } from "@/infrastructure/transaction/create-transaction-repository"
 import { createSubscriptionRepository } from "@/infrastructure/subscription/create-subscription-repository"
+import { createUserRepository } from "@/infrastructure/user/create-user-repository"
 import { createRequireUserId } from "@/presentation/http/auth/require-user-id"
 import { registerCategoryRoutes } from "@/presentation/http/category/register-category-routes"
 import { registerSystemRoutes } from "@/presentation/http/system/register-system-routes"
@@ -21,6 +22,7 @@ import { GetSubscriptionUseCase } from "@/usecase/subscription/get-subscription-
 import { UpdateSubscriptionUseCase } from "@/usecase/subscription/update-subscription-use-case"
 import { DeleteSubscriptionUseCase } from "@/usecase/subscription/delete-subscription-use-case"
 import { ProcessSubscriptionBillingsUseCase } from "@/usecase/subscription/process-subscription-billings-use-case"
+import { EnsureUserExistsUseCase } from "@/usecase/user/ensure-user-exists-use-case"
 import { Hono } from "hono"
 import { cors } from "hono/cors"
 
@@ -54,7 +56,19 @@ export const createApp = (cloudflareEnv: Env) => {
     env.DATABASE_URL,
     env.DATABASE_AUTH_TOKEN,
   )
-  const requireUserId = createRequireUserId(env.CLERK_SECRET_KEY)
+  const userRepository = createUserRepository(
+    env.DATABASE_URL,
+    env.DATABASE_AUTH_TOKEN,
+  )
+
+  const ensureUserExistsUseCase = new EnsureUserExistsUseCase(
+    userRepository,
+    categoryRepository,
+  )
+  const requireUserId = createRequireUserId(
+    env.CLERK_SECRET_KEY,
+    ensureUserExistsUseCase,
+  )
 
   const createTransactionUseCase = new CreateTransactionUseCase(
     transactionRepository,
