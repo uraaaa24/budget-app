@@ -9,9 +9,10 @@ if (!process.env.DATABASE_URL) {
 
 export default defineConfig({
   schema: "./src/infrastructure/database/schema/index.ts",
-  out: "../../supabase/migrations",
-  dialect: "postgresql",
+  out: "./src/infrastructure/database/migrations",
+  dialect: "turso",
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL!,
+    authToken: process.env.DATABASE_AUTH_TOKEN,
   },
 })

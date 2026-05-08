@@ -7,7 +7,6 @@ on:
     paths:
       - 'apps/backend/**'
       - 'packages/**'
-      - 'supabase/migrations/**'
       - '.github/workflows/deploy-backend.yml'
   workflow_dispatch:
 
@@ -40,18 +39,11 @@ jobs:
       - name: Build
         run: pnpm --filter backend run build
 
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-      - name: Run Supabase migrations
+      - name: Run Turso migrations
         env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-        run: |
-          supabase link --project-ref $SUPABASE_PROJECT_ID
-          supabase db push --password ${{ secrets.SUPABASE_DB_PASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+        run: pnpm --filter backend run db:migrate
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3

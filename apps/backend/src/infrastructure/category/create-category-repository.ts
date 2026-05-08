@@ -4,7 +4,8 @@ import { DrizzleCategoryRepository } from "@/infrastructure/database/category/dr
 
 export const createCategoryRepository = (
   databaseUrl: string,
+  authToken?: string,
 ): CategoryRepository => {
-  const db = getDbClient(databaseUrl)
+  const db = getDbClient(databaseUrl, authToken)
   return new DrizzleCategoryRepository(db)
 }

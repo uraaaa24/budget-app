@@ -42,9 +42,18 @@ export const createApp = (cloudflareEnv: Env) => {
     return c.json({ error: "Internal Server Error" }, 500)
   })
 
-  const transactionRepository = createTransactionRepository(env.DATABASE_URL)
-  const categoryRepository = createCategoryRepository(env.DATABASE_URL)
-  const subscriptionRepository = createSubscriptionRepository(env.DATABASE_URL)
+  const transactionRepository = createTransactionRepository(
+    env.DATABASE_URL,
+    env.DATABASE_AUTH_TOKEN,
+  )
+  const categoryRepository = createCategoryRepository(
+    env.DATABASE_URL,
+    env.DATABASE_AUTH_TOKEN,
+  )
+  const subscriptionRepository = createSubscriptionRepository(
+    env.DATABASE_URL,
+    env.DATABASE_AUTH_TOKEN,
+  )
   const requireUserId = createRequireUserId(env.CLERK_SECRET_KEY)
 
   const createTransactionUseCase = new CreateTransactionUseCase(

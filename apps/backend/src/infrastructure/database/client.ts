@@ -1,15 +1,15 @@
-import { drizzle } from "drizzle-orm/postgres-js"
-import postgres from "postgres"
+import { createClient } from "@libsql/client"
+import { drizzle } from "drizzle-orm/libsql"
 import * as schema from "@/infrastructure/database/schema"
 
 /**
  * Get database client for Cloudflare Workers
- * Uses postgres-js with Supabase Connection Pooler (Transaction mode)
+ * Uses Turso (libSQL) for edge-optimized SQLite
  */
-export const getDbClient = (connectionString: string) => {
-  const client = postgres(connectionString, {
-    prepare: false, // Required for Connection Pooler in transaction mode
-    max: 1, // Cloudflare Workers: single connection per request
+export const getDbClient = (url: string, authToken?: string) => {
+  const client = createClient({
+    url,
+    authToken,
   })
   return drizzle(client, { schema })
 }

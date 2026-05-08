@@ -4,7 +4,8 @@ import { DrizzleSubscriptionRepository } from "@/infrastructure/database/subscri
 
 export const createSubscriptionRepository = (
   databaseUrl: string,
+  authToken?: string,
 ): SubscriptionRepository => {
-  const db = getDbClient(databaseUrl)
+  const db = getDbClient(databaseUrl, authToken)
   return new DrizzleSubscriptionRepository(db)
 }

@@ -1,2 +1,0 @@
--- Seed data goes here.
--- This file is executed by `pnpm db:reset` after migrations.

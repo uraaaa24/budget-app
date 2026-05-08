@@ -4,7 +4,8 @@ import { DrizzleTransactionRepository } from "@/infrastructure/database/transact
 
 export const createTransactionRepository = (
   databaseUrl: string,
+  authToken?: string,
 ): TransactionRepository => {
-  const db = getDbClient(databaseUrl)
+  const db = getDbClient(databaseUrl, authToken)
   return new DrizzleTransactionRepository(db)
 }

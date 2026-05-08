@@ -1,12 +1,10 @@
 import { DB_TABLES } from "@/infrastructure/database/schema/constants"
 import {
-  boolean,
   index,
-  pgTable,
+  integer,
+  sqliteTable,
   text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core"
+} from "drizzle-orm/sqlite-core"
 
 const CATEGORY_FIELDS = {
   ID: "id",
@@ -19,34 +17,32 @@ const CATEGORY_FIELDS = {
   UPDATED_AT: "updatedAt",
 } as const
 
-export const categories = pgTable(
+export const categories = sqliteTable(
   DB_TABLES.categories,
   {
-    [CATEGORY_FIELDS.ID]: uuid("id").primaryKey().defaultRandom(),
+    [CATEGORY_FIELDS.ID]: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     [CATEGORY_FIELDS.USER_ID]: text("user_id"),
     [CATEGORY_FIELDS.NAME]: text("name").notNull(),
     [CATEGORY_FIELDS.EMOJI]: text("emoji").notNull(),
     [CATEGORY_FIELDS.TYPE]: text("type", {
       enum: ["expense", "income"],
     }).notNull(),
-    [CATEGORY_FIELDS.IS_DEFAULT]: boolean("is_default")
+    [CATEGORY_FIELDS.IS_DEFAULT]: integer("is_default", { mode: "boolean" })
       .notNull()
       .default(false),
-    [CATEGORY_FIELDS.CREATED_AT]: timestamp("created_at", {
-      withTimezone: true,
-    })
+    [CATEGORY_FIELDS.CREATED_AT]: integer("created_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
-    [CATEGORY_FIELDS.UPDATED_AT]: timestamp("updated_at", {
-      withTimezone: true,
-    })
+      .$defaultFn(() => new Date()),
+    [CATEGORY_FIELDS.UPDATED_AT]: integer("updated_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
+      .$defaultFn(() => new Date()),
   },
   (table) => [
     index("categories_user_id_idx").on(table.userId),
     index("categories_type_idx").on(table.type),
-    index("categories_created_at_idx").on(table.createdAt.desc()),
+    index("categories_created_at_idx").on(table.createdAt),
   ],
 )
 

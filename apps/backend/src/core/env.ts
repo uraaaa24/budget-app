@@ -4,6 +4,7 @@ import * as v from "valibot"
 const EnvSchema = v.object({
   CLERK_SECRET_KEY: v.pipe(v.string(), v.minLength(1)),
   DATABASE_URL: v.pipe(v.string(), v.minLength(1)),
+  DATABASE_AUTH_TOKEN: v.optional(v.string()),
 })
 type AppEnv = v.InferOutput<typeof EnvSchema>
 
@@ -14,6 +15,7 @@ export const validateEnv = (env: Env): AppEnv => {
   const envVars = {
     CLERK_SECRET_KEY: env.CLERK_SECRET_KEY,
     DATABASE_URL: env.DATABASE_URL,
+    DATABASE_AUTH_TOKEN: env.DATABASE_AUTH_TOKEN,
   }
 
   const parsedEnv = v.safeParse(EnvSchema, envVars)

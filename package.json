@@ -18,23 +18,14 @@
     "setup:git-hooks": "git config core.hooksPath .githooks",
     "storybook": "pnpm --filter @repo/ui storybook",
     "build-storybook": "pnpm --filter @repo/ui build-storybook",
-    "db:start": "colima start && pnpm supabase start -x storage-api,logflare,vector,realtime,studio,postgres-meta",
-    "db:start:full": "colima start && pnpm supabase start",
-    "db:stop": "pnpm supabase stop || true; colima stop || true",
-    "db:status": "pnpm supabase status",
-    "db:reset": "pnpm supabase db reset",
-    "db:push": "pnpm supabase db push",
-    "db:push:local": "pnpm supabase db push --local",
-    "db:migration:new": "pnpm supabase migration new",
-    "db:migrate": "pnpm db:start && pnpm db:reset",
-    "db:setup": "pnpm db:start && pnpm db:reset"
+    "db:migrate": "pnpm --filter backend run db:migrate",
+    "db:studio": "pnpm --filter backend run orm:studio"
   },
   "dependencies": {
     "react-native-css-interop": "^0.2.1"
   },
   "devDependencies": {
     "prettier": "^3.7.4",
-    "supabase": "^2.76.8",
     "turbo": "^2.8.7",
     "typescript": "5.9.2"
   },

@@ -1,12 +1,5 @@
 import { DB_TABLES } from "@/infrastructure/database/schema/constants"
-import {
-  doublePrecision,
-  index,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core"
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 const TRANSACTION_FIELDS = {
   ID: "id",
@@ -20,34 +13,30 @@ const TRANSACTION_FIELDS = {
   UPDATED_AT: "updatedAt",
 } as const
 
-export const transactions = pgTable(
+export const transactions = sqliteTable(
   DB_TABLES.transactions,
   {
-    [TRANSACTION_FIELDS.ID]: uuid("id").primaryKey().defaultRandom(),
+    [TRANSACTION_FIELDS.ID]: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
     [TRANSACTION_FIELDS.USER_ID]: text("user_id").notNull(),
     [TRANSACTION_FIELDS.TYPE]: text("type", {
       enum: ["expense", "income"],
     }).notNull(),
-    [TRANSACTION_FIELDS.AMOUNT]: doublePrecision("amount").notNull(),
+    [TRANSACTION_FIELDS.AMOUNT]: real("amount").notNull(),
     [TRANSACTION_FIELDS.CATEGORY]: text("category").notNull(),
     [TRANSACTION_FIELDS.MEMO]: text("memo"),
-    [TRANSACTION_FIELDS.SPENT_AT]: timestamp("spent_at", {
-      withTimezone: true,
-    }).notNull(),
-    [TRANSACTION_FIELDS.CREATED_AT]: timestamp("created_at", {
-      withTimezone: true,
-    })
+    [TRANSACTION_FIELDS.SPENT_AT]: integer("spent_at", { mode: "timestamp" }).notNull(),
+    [TRANSACTION_FIELDS.CREATED_AT]: integer("created_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
-    [TRANSACTION_FIELDS.UPDATED_AT]: timestamp("updated_at", {
-      withTimezone: true,
-    })
+      .$defaultFn(() => new Date()),
+    [TRANSACTION_FIELDS.UPDATED_AT]: integer("updated_at", { mode: "timestamp" })
       .notNull()
-      .defaultNow(),
+      .$defaultFn(() => new Date()),
   },
   (table) => [
-    index("transactions_spent_at_idx").on(table.spentAt.desc()),
-    index("transactions_created_at_idx").on(table.createdAt.desc()),
+    index("transactions_spent_at_idx").on(table.spentAt),
+    index("transactions_created_at_idx").on(table.createdAt),
     index("transactions_user_id_idx").on(table.userId),
   ],
 )

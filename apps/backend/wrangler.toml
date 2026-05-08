@@ -5,7 +5,7 @@ compatibility_flags = ["nodejs_compat"]
 
 # Environment variables for production
 # Set these in Cloudflare Dashboard or via wrangler secret
-# DATABASE_URL, CLERK_SECRET_KEY
+# DATABASE_URL, DATABASE_AUTH_TOKEN, CLERK_SECRET_KEY
 
 [observability]
 enabled = true
