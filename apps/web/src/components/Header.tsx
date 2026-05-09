@@ -6,10 +6,7 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { Link, useRouterState } from "@tanstack/react-router"
-import {
-  CreditCard,
-  Receipt,
-} from "lucide-react"
+import { CreditCard, Receipt } from "lucide-react"
 import { useState } from "react"
 import ClerkHeader from "../integrations/clerk/header-user.tsx"
 
@@ -62,10 +59,10 @@ export default function Header() {
               >
                 <nav className="space-y-2">
                   <Link
-                    to="/"
+                    to="/transactions"
                     className={cn(
                       "flex items-center gap-4 px-4 py-3.5 rounded-xl text-base font-medium transition-all",
-                      currentPath === "/"
+                      currentPath === "/transactions"
                         ? "bg-accent text-foreground"
                         : "hover:bg-accent/50",
                     )}
@@ -74,7 +71,7 @@ export default function Header() {
                     <div
                       className={cn(
                         "flex items-center justify-center h-9 w-9 rounded-lg transition-colors",
-                        currentPath === "/"
+                        currentPath === "/transactions"
                           ? "bg-accent/50 text-foreground"
                           : "text-muted-foreground",
                       )}
@@ -83,7 +80,7 @@ export default function Header() {
                     </div>
                     <span
                       className={cn(
-                        currentPath === "/"
+                        currentPath === "/transactions"
                           ? "text-foreground"
                           : "text-muted-foreground",
                       )}

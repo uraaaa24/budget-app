@@ -12,8 +12,8 @@ function SSOCallback() {
 
   useEffect(() => {
     if (isLoaded && isSignedIn) {
-      // Successful authentication, redirect to home
-      navigate({ to: "/" })
+      // Successful authentication, redirect to transactions
+      navigate({ to: "/transactions" })
     }
   }, [isLoaded, isSignedIn, navigate])
 

@@ -1,20 +1,7 @@
-import { TransactionsPage } from "@/features/transactions/pages/transactions-page"
-import { useAuth } from "@clerk/clerk-react"
 import { createFileRoute, Navigate } from "@tanstack/react-router"
 
-export const Route = createFileRoute("/")({ component: Transactions })
+export const Route = createFileRoute("/")({ component: Index })
 
-function Transactions() {
-  const { isLoaded, isSignedIn } = useAuth()
-
-  // Show nothing while loading to prevent flash
-  if (!isLoaded) {
-    return null
-  }
-
-  if (!isSignedIn) {
-    return <Navigate to="/sign-in" />
-  }
-
-  return <TransactionsPage />
+function Index() {
+  return <Navigate to="/transactions" />
 }
