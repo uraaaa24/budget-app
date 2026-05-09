@@ -92,130 +92,118 @@ export const TransactionsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
-          {/* Month Selector */}
-          <MonthSelect />
+      <>
+        {/* Month Selector */}
+        <MonthSelect />
 
-          {/* Summary Section Skeleton */}
-          <section className="space-y-6">
-            <div className="flex justify-center gap-16">
-              <div className="space-y-2 text-center min-w-32">
-                <Skeleton className="h-4 w-16 mx-auto" />
-                <Skeleton className="h-10 w-28 mx-auto" />
-              </div>
-              <div className="space-y-2 text-center min-w-32">
-                <Skeleton className="h-4 w-16 mx-auto" />
-                <Skeleton className="h-10 w-28 mx-auto" />
+        {/* Summary Section Skeleton */}
+        <section className="space-y-6">
+          <div className="flex justify-center gap-16">
+            <div className="space-y-2 text-center min-w-32">
+              <Skeleton className="h-4 w-16 mx-auto" />
+              <Skeleton className="h-10 w-28 mx-auto" />
+            </div>
+            <div className="space-y-2 text-center min-w-32">
+              <Skeleton className="h-4 w-16 mx-auto" />
+              <Skeleton className="h-10 w-28 mx-auto" />
+            </div>
+          </div>
+        </section>
+
+        {/* Transaction List Skeleton */}
+        <section className="space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="bg-accent/30 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </div>
+                <Skeleton className="h-6 w-20" />
               </div>
             </div>
-          </section>
-
-          {/* Transaction List Skeleton */}
-          <section className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-accent/30 rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 flex-1">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="space-y-2 flex-1">
-                      <Skeleton className="h-5 w-24" />
-                      <Skeleton className="h-4 w-32" />
-                    </div>
-                  </div>
-                  <Skeleton className="h-6 w-20" />
-                </div>
-              </div>
-            ))}
-          </section>
-
-          {/* FAB Button */}
-          <Button
-            disabled
-            className="fixed bottom-8 right-4 h-16 w-16 rounded-full transition-all"
-          >
-            <Plus className="size-6" />
-          </Button>
-        </div>
-      </div>
+          ))}
+        </section>
+      </>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
-        {/* Month Selector */}
-        <MonthSelect />
+    <>
+      {/* Month Selector */}
+      <MonthSelect />
 
-        {/* Summary Section */}
-        <section className="space-y-6">
-          {/* Income & Expense */}
-          <div className="flex justify-center gap-16">
-            <div className="space-y-2 text-center min-w-32">
-              <p className="text-xs text-muted-foreground">Income</p>
-              <p className="text-4xl font-bold text-green-600 tabular-nums">
-                {summary.income.toLocaleString()}
-              </p>
-            </div>
-            <div className="space-y-2 text-center min-w-32">
-              <p className="text-xs text-muted-foreground">Expense</p>
-              <p className="text-4xl font-bold text-red-600 tabular-nums">
-                {summary.expense.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Error Display */}
-        {error && (
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-1">
-            <p className="text-sm font-medium text-destructive">
-              あれ、うまく読み込めませんでした
-            </p>
-            <p className="text-xs text-destructive/80">
-              もう一度試してみてください
+      {/* Summary Section */}
+      <section className="space-y-6">
+        {/* Income & Expense */}
+        <div className="flex justify-center gap-16">
+          <div className="space-y-2 text-center min-w-32">
+            <p className="text-xs text-muted-foreground">Income</p>
+            <p className="text-4xl font-bold text-green-600 tabular-nums">
+              {summary.income.toLocaleString()}
             </p>
           </div>
-        )}
+          <div className="space-y-2 text-center min-w-32">
+            <p className="text-xs text-muted-foreground">Expense</p>
+            <p className="text-4xl font-bold text-red-600 tabular-nums">
+              {summary.expense.toLocaleString()}
+            </p>
+          </div>
+        </div>
+      </section>
 
-        {/* Transaction List */}
-        <section>
-          <TransactionList
-            transactions={transactions}
-            onTransactionPress={handleTransactionPress}
-          />
-        </section>
+      {/* Error Display */}
+      {error && (
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 space-y-1">
+          <p className="text-sm font-medium text-destructive">
+            あれ、うまく読み込めませんでした
+          </p>
+          <p className="text-xs text-destructive/80">
+            もう一度試してみてください
+          </p>
+        </div>
+      )}
 
-        {/* Transaction Form Sheet */}
-        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-          <SheetContent side="bottom" className="h-[90vh] px-6 flex flex-col">
-            <SheetHeader className="pb-6 border-b border-border">
-              <SheetTitle className="text-lg font-medium">
-                {editingTransaction ? "記録を編集" : "記録"}
-              </SheetTitle>
-            </SheetHeader>
-            <div className="mt-6 overflow-y-auto flex-1 px-1">
-              <TransactionForm
-                isSubmitting={isCreating || isUpdating}
-                onSubmit={handleSubmit}
-                onSuccess={handleSuccess}
-                initialValues={
-                  editingTransaction
-                    ? {
-                        id: editingTransaction.id,
-                        type: editingTransaction.type,
-                        amount: editingTransaction.amount.toString(),
-                        category: editingTransaction.category,
-                        memo: editingTransaction.memo ?? "",
-                        spentAt: new Date(editingTransaction.spentAt),
-                      }
-                    : undefined
-                }
-              />
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
+      {/* Transaction List */}
+      <section>
+        <TransactionList
+          transactions={transactions}
+          onTransactionPress={handleTransactionPress}
+        />
+      </section>
+
+      {/* Transaction Form Sheet */}
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent side="bottom" className="h-[90vh] px-6 flex flex-col">
+          <SheetHeader className="pb-6 border-b border-border">
+            <SheetTitle className="text-lg font-medium">
+              {editingTransaction ? "記録を編集" : "記録"}
+            </SheetTitle>
+          </SheetHeader>
+          <div className="mt-6 overflow-y-auto flex-1 px-1">
+            <TransactionForm
+              isSubmitting={isCreating || isUpdating}
+              onSubmit={handleSubmit}
+              onSuccess={handleSuccess}
+              initialValues={
+                editingTransaction
+                  ? {
+                      id: editingTransaction.id,
+                      type: editingTransaction.type,
+                      amount: editingTransaction.amount.toString(),
+                      category: editingTransaction.category,
+                      memo: editingTransaction.memo ?? "",
+                      spentAt: new Date(editingTransaction.spentAt),
+                    }
+                  : undefined
+              }
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* FAB Button - aligned with max-w-2xl container */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 pointer-events-none">
@@ -228,6 +216,6 @@ export const TransactionsPage = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </>
   )
 }

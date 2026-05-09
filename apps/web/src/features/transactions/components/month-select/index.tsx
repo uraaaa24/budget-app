@@ -18,7 +18,7 @@ const MonthSelect = () => {
     <section className="flex items-center justify-between">
       <button
         onClick={goToPreviousMonth}
-        className="text-sm text-muted-foreground hover:text-foreground transition-colors px-2 py-1 flex items-center gap-1"
+        className="text-sm text-muted-foreground hover:text-foreground transition-colors py-1 flex items-center gap-1"
       >
         <ArrowLeft className="size-4" />
         <span>前月</span>
