@@ -13,16 +13,15 @@ import { DatePicker } from "@/features/transactions/components/transaction-form/
 import { TypeSelector } from "@/features/transactions/components/transaction-form/type-selector"
 import { transactionFormSchema } from "@/features/transactions/model/schemas"
 import type {
-  Category,
   CreateTransactionInput,
   TransactionFormValues,
 } from "@/features/transactions/model/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
+import { useCategoryQuery } from "../../hooks/use-category-query"
 
 type TransactionFormProps = {
-  categories: Category[]
   isSubmitting: boolean
   onSubmit: (input: CreateTransactionInput) => Promise<void>
   onSuccess?: () => void
@@ -30,12 +29,13 @@ type TransactionFormProps = {
 }
 
 export const TransactionForm = ({
-  categories,
   isSubmitting,
   onSubmit,
   onSuccess,
   initialValues,
 }: TransactionFormProps) => {
+  const { categories } = useCategoryQuery()
+
   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionFormSchema),
     defaultValues: initialValues ?? {

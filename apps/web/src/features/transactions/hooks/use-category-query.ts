@@ -10,6 +10,7 @@ export const useCategoryQuery = () => {
   const { data, isError, isLoading } = useQuery({
     queryKey: [...categoryQueryKeys.list(), userId],
     enabled: Boolean(isSignedIn),
+    staleTime: 1000 * 60 * 10, // 10分間はキャッシュを新鮮とみなす（マスターデータ的な性質のため）
     queryFn: async () => {
       const token = await getToken()
       if (!token) {

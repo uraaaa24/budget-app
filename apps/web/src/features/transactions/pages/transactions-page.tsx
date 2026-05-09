@@ -8,8 +8,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { useMonth } from "@/contexts/month-context"
 import { TransactionForm } from "@/features/transactions/components/transaction-form"
-import { TransactionList } from "@/features/transactions/components/transaction-list"
-import { useCategoryQuery } from "@/features/transactions/hooks/use-category-query"
 import { useCreateTransaction } from "@/features/transactions/hooks/use-create-transaction"
 import { useTransactionQuery } from "@/features/transactions/hooks/use-transaction-query"
 import { useUpdateTransaction } from "@/features/transactions/hooks/use-update-transaction"
@@ -17,6 +15,7 @@ import type { Transaction } from "@/features/transactions/model/types"
 import { Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import MonthSelect from "../components/month-select"
+import { TransactionList } from "../components/transaction-list"
 
 export const TransactionsPage = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -25,14 +24,17 @@ export const TransactionsPage = () => {
 
   const { selectedYear, selectedMonth } = useMonth()
 
-  const { categories, queryError: categoryQueryError } = useCategoryQuery()
-  const { transactions: allTransactions, queryError, isLoading } = useTransactionQuery()
+  const {
+    transactions: allTransactions,
+    queryError,
+    isLoading,
+  } = useTransactionQuery()
   const { isSubmitting: isCreating, submitTransaction: createTransaction } =
     useCreateTransaction()
   const { isSubmitting: isUpdating, submitTransaction: updateTransaction } =
     useUpdateTransaction()
 
-  const error = queryError ?? categoryQueryError
+  const error = queryError
 
   // Filter transactions by selected month
   const transactions = useMemo(() => {
@@ -179,7 +181,6 @@ export const TransactionsPage = () => {
         {/* Transaction List */}
         <section>
           <TransactionList
-            categories={categories}
             transactions={transactions}
             onTransactionPress={handleTransactionPress}
           />
@@ -195,7 +196,6 @@ export const TransactionsPage = () => {
             </SheetHeader>
             <div className="mt-6 overflow-y-auto flex-1 px-1">
               <TransactionForm
-                categories={categories}
                 isSubmitting={isCreating || isUpdating}
                 onSubmit={handleSubmit}
                 onSuccess={handleSuccess}
