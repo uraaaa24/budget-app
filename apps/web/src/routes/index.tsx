@@ -1,18 +1,20 @@
 import { TransactionsPage } from "@/features/transactions/pages/transactions-page"
-import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react"
-import { createFileRoute } from "@tanstack/react-router"
+import { useAuth } from "@clerk/clerk-react"
+import { createFileRoute, Navigate } from "@tanstack/react-router"
 
 export const Route = createFileRoute("/")({ component: Transactions })
 
 function Transactions() {
-  return (
-    <>
-      <SignedIn>
-        <TransactionsPage />
-      </SignedIn>
-      <SignedOut>
-        <RedirectToSignIn />
-      </SignedOut>
-    </>
-  )
+  const { isLoaded, isSignedIn } = useAuth()
+
+  // Show nothing while loading to prevent flash
+  if (!isLoaded) {
+    return null
+  }
+
+  if (!isSignedIn) {
+    return <Navigate to="/sign-in" />
+  }
+
+  return <TransactionsPage />
 }

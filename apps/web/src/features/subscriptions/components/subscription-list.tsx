@@ -3,14 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
-import { Plus } from "lucide-react"
 import type { VariantProps } from "class-variance-authority"
 import type { badgeVariants } from "@/components/ui/badge"
 
 type SubscriptionListProps = {
   subscriptions: Subscription[]
   onSubscriptionPress?: (subscription: Subscription) => void
-  onAddPress?: () => void
 }
 
 const getStatusBadgeVariant = (
@@ -62,23 +60,12 @@ const getCycleLabel = (cycle: Subscription["billingCycle"]) => {
 export const SubscriptionList = ({
   subscriptions,
   onSubscriptionPress,
-  onAddPress,
 }: SubscriptionListProps) => {
   const activeSubscriptions = subscriptions.filter((s) => s.status === "active")
   const otherSubscriptions = subscriptions.filter((s) => s.status !== "active")
 
   return (
     <div className="space-y-6">
-      {/* Inline Add Button */}
-      <Button
-        variant="outline"
-        onClick={onAddPress}
-        className="w-full h-auto px-4 py-4 border-dashed hover:border-primary hover:bg-accent/30 text-muted-foreground hover:text-foreground"
-      >
-        <Plus className="h-5 w-5 mr-2" />
-        <span className="text-base font-medium">新しいサブスクリプションを追加</span>
-      </Button>
-
       {subscriptions.length === 0 && (
         <div className="py-12 text-center space-y-2">
           <p className="text-sm text-muted-foreground">

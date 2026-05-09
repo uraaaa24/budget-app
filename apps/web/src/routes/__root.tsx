@@ -1,15 +1,15 @@
+import { TanStackDevtools } from "@tanstack/react-devtools"
 import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
 } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { TanStackDevtools } from "@tanstack/react-devtools"
-import Footer from "../components/Footer"
+import { useAuth } from "@clerk/clerk-react"
 import Header from "../components/Header"
 
-import ClerkProvider from "../integrations/clerk/provider"
 import { MonthProvider } from "../contexts/month-context"
+import ClerkProvider from "../integrations/clerk/provider"
 
 import TanStackQueryProvider from "../integrations/tanstack-query/root-provider"
 
@@ -57,23 +57,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <ClerkProvider>
           <TanStackQueryProvider>
             <MonthProvider>
-              <Header />
+              <ConditionalHeader />
               {children}
               {/*<Footer />*/}
-            {import.meta.env.DEV && (
-              <TanStackDevtools
-                config={{
-                  position: "bottom-right",
-                }}
-                plugins={[
-                  {
-                    name: "Tanstack Router",
-                    render: <TanStackRouterDevtoolsPanel />,
-                  },
-                  TanStackQueryDevtools,
-                ]}
-              />
-            )}
+              {import.meta.env.DEV && (
+                <TanStackDevtools
+                  config={{
+                    position: "bottom-right",
+                  }}
+                  plugins={[
+                    {
+                      name: "Tanstack Router",
+                      render: <TanStackRouterDevtoolsPanel />,
+                    },
+                    TanStackQueryDevtools,
+                  ]}
+                />
+              )}
             </MonthProvider>
           </TanStackQueryProvider>
         </ClerkProvider>
@@ -81,4 +81,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   )
+}
+
+function ConditionalHeader() {
+  const { isLoaded, isSignedIn } = useAuth()
+
+  // Don't show header while auth is loading
+  if (!isLoaded) {
+    return null
+  }
+
+  // Only show header when signed in
+  if (!isSignedIn) {
+    return null
+  }
+
+  return <Header />
 }

@@ -90,7 +90,7 @@ export const TransactionsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
           {/* Month Selector */}
           <MonthSelect />
@@ -140,7 +140,7 @@ export const TransactionsPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50 relative">
       <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
         {/* Month Selector */}
         <MonthSelect />
@@ -185,14 +185,6 @@ export const TransactionsPage = () => {
           />
         </section>
 
-        {/* FAB Button - Safe mobile positioning */}
-        <Button
-          onClick={handleNewTransaction}
-          className="fixed bottom-8 right-4 h-16 w-16 rounded-full transition-all"
-        >
-          <Plus className="size-6" />
-        </Button>
-
         {/* Transaction Form Sheet */}
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
           <SheetContent side="bottom" className="h-[90vh] px-6 flex flex-col">
@@ -223,6 +215,18 @@ export const TransactionsPage = () => {
             </div>
           </SheetContent>
         </Sheet>
+      </div>
+
+      {/* FAB Button - aligned with max-w-2xl container */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 pointer-events-none">
+        <div className="flex justify-end">
+          <Button
+            onClick={handleNewTransaction}
+            className="h-16 w-16 rounded-full transition-all pointer-events-auto"
+          >
+            <Plus className="size-6" />
+          </Button>
+        </div>
       </div>
     </div>
   )

@@ -9,7 +9,7 @@ export const DashboardPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
           {/* Key Insights Skeleton */}
           <section className="grid grid-cols-2 gap-4">
@@ -73,7 +73,7 @@ export const DashboardPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
         {/* Key Insights */}
         {monthlyData.expense > 0 && (

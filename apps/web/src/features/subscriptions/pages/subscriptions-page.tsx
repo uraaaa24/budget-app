@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button"
 import {
   Sheet,
   SheetContent,
@@ -14,6 +15,7 @@ import type {
   CreateSubscriptionInput,
   Subscription,
 } from "@/features/subscriptions/model/types"
+import { Plus } from "lucide-react"
 import { useState } from "react"
 
 export const SubscriptionsPage = () => {
@@ -59,7 +61,7 @@ export const SubscriptionsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gray-50">
         <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
           {/* Summary Section Skeleton */}
           <section className="space-y-6">
@@ -106,7 +108,7 @@ export const SubscriptionsPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50 relative">
       <div className="mx-auto max-w-2xl px-4 pt-24 pb-24 space-y-8">
         {/* Summary Section */}
         <section className="space-y-6">
@@ -153,7 +155,6 @@ export const SubscriptionsPage = () => {
           <SubscriptionList
             subscriptions={subscriptions}
             onSubscriptionPress={handleSubscriptionPress}
-            onAddPress={handleNewSubscription}
           />
         </section>
 
@@ -219,6 +220,18 @@ export const SubscriptionsPage = () => {
             </div>
           </SheetContent>
         </Sheet>
+      </div>
+
+      {/* FAB Button - aligned with max-w-2xl container */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 pointer-events-none">
+        <div className="flex justify-end">
+          <Button
+            onClick={handleNewSubscription}
+            className="h-16 w-16 rounded-full transition-all pointer-events-auto"
+          >
+            <Plus className="size-6" />
+          </Button>
+        </div>
       </div>
     </div>
   )
