@@ -1,7 +1,7 @@
 import { logger } from "@/core/logger"
 import type { GetUserId } from "@/presentation/http/auth/get-user-id"
 import type { EnsureUserExistsUseCase } from "@/usecase/user/ensure-user-exists-use-case"
-import { verifyToken } from "@clerk/backend"
+import { createClerkClient, verifyToken } from "@clerk/backend"
 import type { Context } from "hono"
 
 const getRequestMeta = (c: Context) => ({
@@ -26,6 +26,8 @@ export const createRequireUserId = (
   clerkSecretKey: string,
   ensureUserExistsUseCase: EnsureUserExistsUseCase,
 ): GetUserId => {
+  const clerkClient = createClerkClient({ secretKey: clerkSecretKey })
+
   return async (c: Context): Promise<string | Response> => {
     const authHeader = c.req.header("authorization")
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -52,12 +54,33 @@ export const createRequireUserId = (
         return c.json({ error: "Unauthorized" }, 401)
       }
 
-      // Ensure user exists in database, create if not
-      await ensureUserExistsUseCase.execute({
-        userId,
-        email: payload.email as string | undefined,
-        name: payload.name as string | undefined,
-      })
+      // Fetch user info from Clerk to get email and name
+      try {
+        const user = await clerkClient.users.getUser(userId)
+
+        // Ensure user exists in database, create if not
+        await ensureUserExistsUseCase.execute({
+          userId,
+          email: user.emailAddresses[0]?.emailAddress,
+          name:
+            user.firstName && user.lastName
+              ? `${user.firstName} ${user.lastName}`.trim()
+              : user.firstName || user.lastName || undefined,
+        })
+      } catch (userFetchError) {
+        logger.warn("clerk_user_fetch_failed", {
+          userId,
+          errorMessage:
+            userFetchError instanceof Error
+              ? userFetchError.message
+              : String(userFetchError),
+        })
+
+        // Still create user even if Clerk API fails, just without email/name
+        await ensureUserExistsUseCase.execute({
+          userId,
+        })
+      }
 
       return userId
     } catch (error) {
