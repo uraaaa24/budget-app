@@ -15,7 +15,8 @@ import type { Transaction } from "@/features/transactions/model/types"
 import { Plus } from "lucide-react"
 import { useMemo, useState } from "react"
 import MonthSelect from "../components/month-select"
-import { TransactionList } from "../components/transaction-list"
+import SummaryCard from "../components/summary-card"
+import TransactionList from "../components/transaction-list"
 
 export const TransactionsPage = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false)
@@ -140,18 +141,8 @@ export const TransactionsPage = () => {
       <section className="space-y-6">
         {/* Income & Expense */}
         <div className="flex justify-center gap-16">
-          <div className="space-y-2 text-center min-w-32">
-            <p className="text-xs text-muted-foreground">Income</p>
-            <p className="text-4xl font-bold text-green-600 tabular-nums">
-              {summary.income.toLocaleString()}
-            </p>
-          </div>
-          <div className="space-y-2 text-center min-w-32">
-            <p className="text-xs text-muted-foreground">Expense</p>
-            <p className="text-4xl font-bold text-red-600 tabular-nums">
-              {summary.expense.toLocaleString()}
-            </p>
-          </div>
+          <SummaryCard type="income" amount={summary.income} />
+          <SummaryCard type="expense" amount={summary.expense} />
         </div>
       </section>
 

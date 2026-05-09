@@ -8,8 +8,8 @@ type TypeSelectorProps = {
 }
 
 const typeOptions: { value: TransactionType; label: string }[] = [
-  { value: "expense", label: "支出" },
   { value: "income", label: "収入" },
+  { value: "expense", label: "支出" },
 ]
 
 export const TypeSelector = ({ selectedType, onSelect }: TypeSelectorProps) => {

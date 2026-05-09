@@ -7,58 +7,43 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Warm Everyday Minimalism - Light Mode */
+  /* shadcn/ui Default Theme - Light Mode */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0.007 286.033);
 
-  /* Base Colors - Soft, natural, breathable */
-  --background: oklch(0.99 0.008 85);
-  --foreground: oklch(0.30 0.018 120);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0.007 286.033);
 
-  /* Surface & Cards - Very subtle, minimal contrast */
-  --card: oklch(0.995 0.006 85);
-  --card-foreground: oklch(0.30 0.018 120);
-  --popover: oklch(0.995 0.006 85);
-  --popover-foreground: oklch(0.30 0.018 120);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0.007 286.033);
 
-  /* Primary - Soft sage green */
-  --primary: oklch(0.45 0.055 145);
-  --primary-foreground: oklch(0.99 0.008 85);
+  --primary: oklch(0.21 0.006 285.885);
+  --primary-foreground: oklch(0.985 0 0);
 
-  /* Secondary & Muted - Warm neutral */
-  --secondary: oklch(0.96 0.010 85);
-  --secondary-foreground: oklch(0.30 0.018 120);
-  --muted: oklch(0.95 0.010 85);
-  --muted-foreground: oklch(0.48 0.015 110);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
 
-  /* Accent - Slightly warmer than secondary */
-  --accent: oklch(0.94 0.012 80);
-  --accent-foreground: oklch(0.30 0.018 120);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.491 0.01 286.067);
 
-  /* Destructive - Soft coral */
-  --destructive: oklch(0.64 0.17 15);
-  --destructive-foreground: oklch(0.99 0.008 85);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
 
-  /* Borders & Input - Very soft, barely there */
-  --border: oklch(0.90 0.010 85);
-  --input: oklch(0.92 0.010 85);
-  --ring: oklch(0.50 0.055 145);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
 
-  /* Income & Expense - Gentle, fresh, clearly distinct */
-  --income: oklch(0.58 0.13 155);
-  --income-bg: oklch(0.97 0.035 155);
-  --income-border: oklch(0.90 0.045 155);
-  --expense: oklch(0.64 0.17 15);
-  --expense-bg: oklch(0.97 0.045 15);
-  --expense-border: oklch(0.90 0.055 15);
+  --border: oklch(0.896 0.002 286.32);
+  --input: oklch(0.896 0.002 286.32);
+  --ring: oklch(0.21 0.006 285.885);
 
-  /* Spacing & Sizing */
   --radius: 0.5rem;
 
-  /* Chart colors - not used in this app but keeping for compatibility */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.141 0.005 285.823);
   --sidebar-primary: oklch(0.21 0.006 285.885);
@@ -70,55 +55,41 @@
 }
 
 .dark {
-  /* Warm Everyday Minimalism - Dark Mode */
+  /* shadcn/ui Default Theme - Dark Mode */
+  --background: oklch(0.145 0.007 286.033);
+  --foreground: oklch(0.985 0 0);
 
-  /* Base Colors - Warm dark, not pure black */
-  --background: oklch(0.24 0.015 100);
-  --foreground: oklch(0.90 0.012 85);
+  --card: oklch(0.145 0.007 286.033);
+  --card-foreground: oklch(0.985 0 0);
 
-  /* Surface & Cards - Subtle lift from background */
-  --card: oklch(0.27 0.015 100);
-  --card-foreground: oklch(0.90 0.012 85);
-  --popover: oklch(0.28 0.015 100);
-  --popover-foreground: oklch(0.90 0.012 85);
+  --popover: oklch(0.145 0.007 286.033);
+  --popover-foreground: oklch(0.985 0 0);
 
-  /* Primary - Soft sage green, lighter for dark mode */
-  --primary: oklch(0.72 0.10 155);
-  --primary-foreground: oklch(0.27 0.015 100);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.21 0.006 285.885);
 
-  /* Secondary & Muted - Warm neutral */
-  --secondary: oklch(0.32 0.015 100);
-  --secondary-foreground: oklch(0.90 0.012 85);
-  --muted: oklch(0.34 0.015 100);
-  --muted-foreground: oklch(0.62 0.012 95);
+  --secondary: oklch(0.232 0.006 285.945);
+  --secondary-foreground: oklch(0.985 0 0);
 
-  /* Accent */
-  --accent: oklch(0.35 0.015 100);
-  --accent-foreground: oklch(0.90 0.012 85);
+  --muted: oklch(0.232 0.006 285.945);
+  --muted-foreground: oklch(0.698 0.005 286.202);
 
-  /* Destructive - Soft coral for dark */
-  --destructive: oklch(0.70 0.15 15);
-  --destructive-foreground: oklch(0.96 0.010 85);
+  --accent: oklch(0.232 0.006 285.945);
+  --accent-foreground: oklch(0.985 0 0);
 
-  /* Borders & Input - Subtle separation */
-  --border: oklch(0.38 0.015 100);
-  --input: oklch(0.36 0.015 100);
-  --ring: oklch(0.60 0.10 155);
+  --destructive: oklch(0.627 0.246 29.234);
+  --destructive-foreground: oklch(0.985 0 0);
 
-  /* Income & Expense - Gentle, visible in dark mode */
-  --income: oklch(0.68 0.12 155);
-  --income-bg: oklch(0.30 0.035 155);
-  --income-border: oklch(0.40 0.045 155);
-  --expense: oklch(0.70 0.15 15);
-  --expense-bg: oklch(0.30 0.040 15);
-  --expense-border: oklch(0.40 0.055 15);
+  --border: oklch(0.232 0.006 285.945);
+  --input: oklch(0.232 0.006 285.945);
+  --ring: oklch(0.795 0.004 286.242);
 
-  /* Chart colors */
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+
   --sidebar: oklch(0.21 0.006 285.885);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);

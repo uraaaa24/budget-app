@@ -18,13 +18,13 @@ const MonthSelect = () => {
     <section className="flex items-center justify-between">
       <button
         onClick={goToPreviousMonth}
-        className="text-sm text-muted-foreground hover:text-foreground transition-colors py-1 flex items-center gap-1"
+        className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors py-1 flex items-center gap-1"
       >
         <ArrowLeft className="size-4" />
         <span>前月</span>
       </button>
 
-      <p className="text-xl font-medium hover:text-muted-foreground transition-colors px-4 py-2">
+      <p className="text-xl font-bold hover:text-muted-foreground transition-colors px-4 py-2">
         {selectedYear}.{String(selectedMonth + 1).padStart(2, "0")}
       </p>
 
@@ -32,7 +32,7 @@ const MonthSelect = () => {
         onClick={goToNextMonth}
         disabled={isCurrentMonth}
         className={cn(
-          "text-sm text-muted-foreground hover:text-foreground transition-opacity px-2 py-1 flex items-center gap-1 disabled:cursor-not-allowed disabled:hover:text-muted-foreground",
+          "text-sm font-semibold text-muted-foreground hover:text-foreground transition-opacity px-2 py-1 flex items-center gap-1 disabled:cursor-not-allowed disabled:hover:text-muted-foreground",
           isCurrentMonth && "opacity-0 pointer-events-none",
         )}
       >

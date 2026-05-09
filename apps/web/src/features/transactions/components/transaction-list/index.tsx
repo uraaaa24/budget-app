@@ -7,7 +7,7 @@ type TransactionListProps = {
   onTransactionPress?: (transaction: Transaction) => void
 }
 
-export const TransactionList = ({
+const TransactionList = ({
   transactions,
   onTransactionPress,
 }: TransactionListProps) => {
@@ -26,23 +26,29 @@ export const TransactionList = ({
 
   return (
     <div className="space-y-6">
-      {groupedTransactions.map((group) => (
-        <div key={group.dateLabel} className="space-y-3">
-          <p className="text-sm font-medium text-muted-foreground px-1">
-            {group.dateLabel}
-          </p>
+      {groupedTransactions.map((group) => {
+        return (
+          <div key={group.dateLabel} className="space-y-3">
+            <p className="text-sm font-medium text-muted-foreground">
+              {group.dateLabel}
+            </p>
 
-          <div className="space-y-2">
-            {group.items.map((item) => (
-              <TransactionListItem
-                key={item.id}
-                transaction={item}
-                onPress={() => onTransactionPress?.(item)}
-              />
-            ))}
+            <div className="space-y-2">
+              {group.items.map((item) => {
+                return (
+                  <TransactionListItem
+                    key={item.id}
+                    transaction={item}
+                    onPress={() => onTransactionPress?.(item)}
+                  />
+                )
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
+
+export default TransactionList
